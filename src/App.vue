@@ -686,12 +686,10 @@ onMounted(() => {
                   <g filter="url(#softShadow)">
                     <rect width="936" height="240" rx="22" fill="url(#cardFill)" stroke="#FFFFFF" stroke-opacity=".15" />
                     <rect width="6" height="240" rx="3" :fill="selectedTheme.accent" />
-                    <path d="M0 44H936" stroke="#FFFFFF" stroke-opacity=".1" />
                   </g>
-                  <text x="28" y="29" fill="#FFFFFF" fill-opacity=".52" font-size="13" font-weight="800" letter-spacing="3">JUEGO {{ mIdx + 1 }} · {{ formatTime(m.time) }}</text>
 
                   <!-- AWAY TEAM (Left) -->
-                  <g transform="translate(195 138)">
+                  <g transform="translate(195 120)">
                     <g transform="translate(-105 0)" filter="url(#logoShadow)">
                       <circle r="56" fill="#02080C" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="2" />
                       <circle r="50" :fill="getTeam(m.awayTeamId).primary" />
@@ -710,15 +708,15 @@ onMounted(() => {
                   </g>
 
                   <!-- VS Center & Time below -->
-                  <g transform="translate(468 132)">
-                    <circle r="32" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
-                    <circle r="25" :fill="selectedTheme.accent" />
-                    <text y="5" text-anchor="middle" dominant-baseline="middle" fill="#07131D" font-size="15" font-weight="900">VS</text>
-                    <text y="48" text-anchor="middle" fill="#FFFFFF" fill-opacity=".88" font-size="14" font-weight="800" letter-spacing=".5">{{ formatTime(m.time) }}</text>
+                  <g transform="translate(468 112)">
+                    <circle r="34" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
+                    <circle r="27" :fill="selectedTheme.accent" />
+                    <text y="5" text-anchor="middle" dominant-baseline="middle" fill="#07131D" font-size="16" font-weight="900">VS</text>
+                    <text y="52" text-anchor="middle" fill="#FFFFFF" fill-opacity=".88" font-size="15" font-weight="800" letter-spacing=".5">{{ formatTime(m.time) }}</text>
                   </g>
 
                   <!-- HOME TEAM (Right) -->
-                  <g transform="translate(635 138)">
+                  <g transform="translate(635 120)">
                     <text x="140" y="-2" text-anchor="end" fill="#FFFFFF" font-size="24" font-weight="900" letter-spacing=".5">{{ getTeam(m.homeTeamId).name.toLocaleUpperCase('es-VE') }}</text>
                     <text x="140" y="22" text-anchor="end" :fill="selectedTheme.accentSoft" font-size="12" font-weight="700" letter-spacing="2">LOCAL</text>
                     <g transform="translate(210 0)" filter="url(#logoShadow)">
@@ -767,12 +765,11 @@ onMounted(() => {
                   </g>
 
                   <!-- VS CENTER & TIME DIRECTLY BELOW -->
-                  <g transform="translate(468 68)">
-                    <text y="-34" text-anchor="middle" :fill="selectedTheme.accentSoft" font-size="11" font-weight="800" letter-spacing="1.5">JUEGO {{ mIdx + 1 }}</text>
+                  <g transform="translate(468 72)">
                     <circle r="23" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
                     <circle r="18" :fill="selectedTheme.accent" />
                     <text y="4" text-anchor="middle" dominant-baseline="middle" fill="#07131D" font-size="12" font-weight="900">VS</text>
-                    <text y="39" text-anchor="middle" fill="#FFFFFF" fill-opacity=".88" font-size="13" font-weight="800" letter-spacing=".5">{{ formatTime(m.time) }}</text>
+                    <text y="38" text-anchor="middle" fill="#FFFFFF" fill-opacity=".88" font-size="13" font-weight="800" letter-spacing=".5">{{ formatTime(m.time) }}</text>
                   </g>
 
                   <!-- HOME (Right) -->
@@ -824,12 +821,11 @@ onMounted(() => {
                   </g>
 
                   <!-- VS CENTER & TIME DIRECTLY BELOW -->
-                  <g transform="translate(468 47)">
-                    <text y="-25" text-anchor="middle" :fill="selectedTheme.accentSoft" font-size="10" font-weight="800" letter-spacing="1.5">JUEGO {{ mIdx + 1 }}</text>
+                  <g transform="translate(468 52)">
                     <circle r="19" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
                     <circle r="15" :fill="selectedTheme.accent" />
                     <text y="4" text-anchor="middle" dominant-baseline="middle" fill="#07131D" font-size="11" font-weight="900">VS</text>
-                    <text y="32" text-anchor="middle" fill="#FFFFFF" fill-opacity=".88" font-size="12" font-weight="800" letter-spacing=".5">{{ formatTime(m.time) }}</text>
+                    <text y="30" text-anchor="middle" fill="#FFFFFF" fill-opacity=".88" font-size="12" font-weight="800" letter-spacing=".5">{{ formatTime(m.time) }}</text>
                   </g>
 
                   <!-- HOME (Right) -->
