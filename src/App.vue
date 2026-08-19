@@ -138,10 +138,8 @@ const formatTime = (timeStr: string) => {
   if (!timeStr) return '--:--'
   const [hourValue, minutes = '00'] = timeStr.split(':')
   const hour = Number(hourValue)
-  if (Number.isNaN(hour)) return timeStr
   const suffix = hour >= 12 ? 'PM' : 'AM'
-  const hour12 = hour % 12 || 12
-  return `${hour12}:${minutes.padStart(2, '0')} ${suffix}`
+  return `${`${hour % 12 || 12}`.padStart(2, '0')}:${minutes} ${suffix}`
 }
 
 const venueDisplay = computed(() => venue.value.trim().toLocaleUpperCase('es-VE') || 'SEDE POR CONFIRMAR')
@@ -490,7 +488,6 @@ onMounted(() => {
                     <label class="match-time-input-wrap">
                       <span>Hora:</span>
                       <input v-model="match.time" type="time" required />
-                      <span class="match-time-preview">{{ formatTime(match.time) }}</span>
                     </label>
                   </div>
                   <button
