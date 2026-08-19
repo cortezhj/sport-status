@@ -45,6 +45,53 @@ button:disabled { cursor: not-allowed; }
 .brand > span:last-child { display: flex; flex-direction: column; line-height: 1; }
 .brand strong { font-family: 'Bahnschrift Condensed', 'Arial Narrow', sans-serif; font-size: 18px; letter-spacing: 2.3px; font-weight: 900; }
 .brand small { margin-top: 5px; color: #7c8581; font-size: 9px; font-weight: 700; letter-spacing: 1.45px; text-transform: uppercase; }
+
+.mode-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px;
+  background: #e2e8e3;
+  border-radius: 9px;
+  border: 1px solid #d4dcd6;
+}
+.mode-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #5d6763;
+  font-family: 'Bahnschrift Condensed', 'Arial Narrow', sans-serif;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  line-height: 1;
+  transition: all .2s cubic-bezier(0.2, 0, 0, 1);
+}
+.mode-tab-btn svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  display: block;
+}
+.mode-tab-btn span {
+  display: inline-block;
+  line-height: 1;
+  transform: translateY(0.5px);
+}
+.mode-tab-btn:hover:not(.active) { color: #172823; background: rgba(255, 255, 255, .45); }
+.mode-tab-btn.active {
+  background: #ffffff;
+  color: #bf661d;
+  box-shadow: 0 1.5px 5px rgba(16, 32, 28, .1);
+}
+
 .topbar-meta { display: flex; align-items: center; gap: 22px; color: #6e7774; font-size: 11px; font-weight: 700; letter-spacing: .4px; }
 .autosave { display: inline-flex; align-items: center; gap: 8px; }
 .autosave i, .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #2e9d68; box-shadow: 0 0 0 4px rgba(46, 157, 104, .11); }
@@ -211,6 +258,116 @@ button:disabled { cursor: not-allowed; }
 .swap-button svg { width: 17px; height: 17px; }
 .field-error { margin: 5px 0 0; color: #b74031; font-size: 10px; font-weight: 700; }
 
+/* Results Form Styling */
+.match-status-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #65706b;
+  font-size: 11px;
+  font-weight: 700;
+}
+.status-input {
+  width: 76px;
+  border: 1px solid #d7ddd8;
+  border-radius: 6px;
+  padding: 3px 7px;
+  font-family: 'Bahnschrift Condensed', 'Arial Narrow', sans-serif;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .5px;
+  color: #172823;
+  background: #f8faf7;
+  outline: none;
+  text-transform: uppercase;
+  text-align: center;
+}
+.status-input:focus { border-color: #c4772d; }
+.result-teams-grid { display: flex; flex-direction: column; gap: 8px; }
+.result-team-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: flex-end;
+  padding: 10px 12px 12px;
+  border-radius: 10px;
+  background: #fbfdfa;
+  border: 1px solid #e2e8e3;
+  transition: all .2s ease;
+}
+.result-team-row.is-winner {
+  border-color: #e5b985;
+  background: #fffdf9;
+}
+.team-field-main { min-width: 0; display: flex; flex-direction: column; }
+.team-field-main label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 7px;
+  color: #59635f;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+}
+.winner-pill {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #fef08a;
+  color: #854d0e;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+}
+.che-inputs-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+.che-field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.che-field span {
+  font-family: 'Bahnschrift Condensed', 'Arial Narrow', sans-serif;
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: .4px;
+  color: #6a7470;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.che-field input {
+  width: 44px;
+  height: 44px;
+  border: 1px solid #d7ddd8;
+  border-radius: 9px;
+  text-align: center;
+  font-family: 'Bahnschrift Condensed', 'Arial Narrow', sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  color: #172823;
+  background: #ffffff;
+  outline: none;
+  transition: all .2s;
+  padding: 0;
+}
+.che-runs input {
+  width: 50px;
+  border-color: #d7802b;
+  background: #fdf6ec;
+  color: #b86722;
+  font-size: 22px;
+}
+.che-field input:focus {
+  border-color: #c4772d;
+  box-shadow: 0 0 0 3px rgba(218, 123, 36, .12);
+}
+
 .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px 12px; }
 .input-field { min-width: 0; }
 .input-field small { margin-left: 5px; color: #68736e; font-size: 9px; font-weight: 600; letter-spacing: 0; text-transform: none; }
@@ -302,8 +459,27 @@ button:disabled { cursor: not-allowed; }
   .panel-intro h1 { font-size: 50px; }
   .preview-panel { padding: 38px max(24px, calc((100vw - 720px) / 2)) 46px; }
 }
+@media (max-width: 780px) {
+  .topbar {
+    height: auto;
+    padding: 12px 18px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .mode-tabs {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+  .mode-tab-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 12px;
+  }
+}
+
 @media (max-width: 580px) {
-  .topbar { height: 66px; padding: 0 18px; }
+  .topbar { padding: 10px 14px; }
   .topbar-meta { gap: 0; }
   .resolution { display: none; }
   .brand-mark { width: 34px; height: 34px; }
@@ -322,6 +498,11 @@ button:disabled { cursor: not-allowed; }
   .mini-crest { width: 32px; height: 32px; margin-left: 7px; }
   .team-select-wrap select { padding-left: 6px; font-size: 11px; }
   .upload-action { font-size: 10px; }
+  .result-team-row { grid-template-columns: 1fr; gap: 10px; padding: 10px; }
+  .che-inputs-wrap { justify-content: space-between; width: 100%; }
+  .che-field { flex: 1; }
+  .che-field input { width: 100%; height: 42px; font-size: 17px; }
+  .che-runs input { width: 100%; font-size: 20px; }
   .field-grid { gap: 14px 9px; }
   .theme-options label { padding: 0 8px; }
   .theme-options svg { display: none; }
