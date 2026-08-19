@@ -708,11 +708,11 @@ onMounted(() => {
                   </g>
 
                   <!-- VS Center & Time below -->
-                  <g transform="translate(468 112)">
-                    <circle r="34" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
-                    <circle r="27" :fill="selectedTheme.accent" />
-                    <text y="5" text-anchor="middle" dominant-baseline="middle" fill="#07131D" font-size="16" font-weight="900">VS</text>
-                    <text y="52" text-anchor="middle" fill="#FFFFFF" fill-opacity=".88" font-size="15" font-weight="800" letter-spacing=".5">{{ formatTime(m.time) }}</text>
+                  <g transform="translate(468 108)">
+                    <circle r="40" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="2" />
+                    <circle r="32" :fill="selectedTheme.accent" />
+                    <text y="6" text-anchor="middle" dominant-baseline="middle" fill="#07131D" font-size="19" font-weight="900">VS</text>
+                    <text y="62" text-anchor="middle" fill="#FFFFFF" fill-opacity=".92" font-size="18" font-weight="900" letter-spacing=".5">{{ formatTime(m.time) }}</text>
                   </g>
 
                   <!-- HOME TEAM (Right) -->
@@ -765,11 +765,11 @@ onMounted(() => {
                   </g>
 
                   <!-- VS CENTER & TIME DIRECTLY BELOW -->
-                  <g transform="translate(468 72)">
-                    <circle r="23" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
-                    <circle r="18" :fill="selectedTheme.accent" />
-                    <text y="4" text-anchor="middle" dominant-baseline="middle" fill="#07131D" font-size="12" font-weight="900">VS</text>
-                    <text y="38" text-anchor="middle" fill="#FFFFFF" fill-opacity=".88" font-size="13" font-weight="800" letter-spacing=".5">{{ formatTime(m.time) }}</text>
+                  <g transform="translate(468 68)">
+                    <circle r="30" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="2" />
+                    <circle r="24" :fill="selectedTheme.accent" />
+                    <text y="5" text-anchor="middle" dominant-baseline="middle" fill="#07131D" font-size="15" font-weight="900">VS</text>
+                    <text y="46" text-anchor="middle" fill="#FFFFFF" fill-opacity=".92" font-size="16" font-weight="900" letter-spacing=".5">{{ formatTime(m.time) }}</text>
                   </g>
 
                   <!-- HOME (Right) -->
@@ -821,11 +821,11 @@ onMounted(() => {
                   </g>
 
                   <!-- VS CENTER & TIME DIRECTLY BELOW -->
-                  <g transform="translate(468 52)">
-                    <circle r="19" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
-                    <circle r="15" :fill="selectedTheme.accent" />
-                    <text y="4" text-anchor="middle" dominant-baseline="middle" fill="#07131D" font-size="11" font-weight="900">VS</text>
-                    <text y="30" text-anchor="middle" fill="#FFFFFF" fill-opacity=".88" font-size="12" font-weight="800" letter-spacing=".5">{{ formatTime(m.time) }}</text>
+                  <g transform="translate(468 48)">
+                    <circle r="24" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.8" />
+                    <circle r="19" :fill="selectedTheme.accent" />
+                    <text y="4" text-anchor="middle" dominant-baseline="middle" fill="#07131D" font-size="12" font-weight="900">VS</text>
+                    <text y="36" text-anchor="middle" fill="#FFFFFF" fill-opacity=".92" font-size="14" font-weight="900" letter-spacing=".5">{{ formatTime(m.time) }}</text>
                   </g>
 
                   <!-- HOME (Right) -->
