@@ -11,12 +11,13 @@
 }
 
 * { box-sizing: border-box; }
-html { min-width: 320px; background: #e8ece8; }
+html { min-width: 320px; background: #e8ece8; overflow-x: hidden; }
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
   background: radial-gradient(circle at 75% 18%, rgba(221, 231, 224, .9), transparent 38%), #e8ece8;
+  overflow-x: hidden;
 }
 button, input, select { font: inherit; }
 button, select, input[type='date'], input[type='time'], label[for] { cursor: pointer; }
@@ -59,7 +60,8 @@ button:disabled { cursor: not-allowed; }
 .panel-intro > p { max-width: 480px; color: #68726f; font-size: 12px; line-height: 1.65; }
 .match-form { max-width: 600px; }
 .form-section { padding: 28px 0 30px; border-top: 1px solid var(--line); }
-.section-heading { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; }
+.section-heading { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; min-width: 0; }
+.section-heading > div { min-width: 0; }
 .section-heading > span { width: 29px; height: 29px; flex: 0 0 auto; display: grid; place-items: center; border: 1px solid #d6dcd7; border-radius: 50%; color: #b86722; font-family: 'Bahnschrift Condensed', 'Arial Narrow', sans-serif; font-size: 12px; font-weight: 800; }
 .section-heading h2 { margin: 0; color: #1b2824; font-family: 'Bahnschrift Condensed', 'Arial Narrow', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: .2px; line-height: 1.1; text-transform: uppercase; }
 .section-heading p { margin: 4px 0 0; color: #5f6b66; font-size: 11px; }
@@ -311,7 +313,12 @@ button:disabled { cursor: not-allowed; }
   .control-panel { padding: 34px 18px 40px; }
   .panel-intro h1 { font-size: 43px; }
   .panel-intro > p { font-size: 11px; }
-  .teams-control { grid-template-columns: 1fr 36px 1fr; }
+  .section-heading-row { flex-wrap: wrap; gap: 12px; }
+  .add-match-btn { width: 100%; height: 38px; justify-content: center; }
+  .teams-control { grid-template-columns: 1fr; gap: 0; }
+  .team-field { min-width: 0; }
+  .swap-button { width: 42px; height: 42px; margin: 14px auto 10px; transform: rotate(90deg); box-shadow: 0 2px 6px rgba(16, 32, 28, .08); }
+  .swap-button:hover { transform: rotate(270deg); }
   .mini-crest { width: 32px; height: 32px; margin-left: 7px; }
   .team-select-wrap select { padding-left: 6px; font-size: 11px; }
   .upload-action { font-size: 10px; }
@@ -324,11 +331,6 @@ button:disabled { cursor: not-allowed; }
 }
 @media (max-width: 430px) {
   .panel-intro h1 { font-size: 39px; }
-  .teams-control { grid-template-columns: 1fr; gap: 0; }
-  .team-field { min-width: 0; }
-  .swap-button { margin: 2px auto 8px; transform: rotate(90deg); }
-  .swap-button:hover { transform: rotate(270deg); }
-  .swap-button { width: 44px; height: 44px; }
   .logo-actions { min-height: 44px; margin-top: 0; }
   .upload-action, .clear-logo { min-height: 44px; padding-top: 0; padding-bottom: 0; }
   .field-grid { grid-template-columns: 1fr; }
