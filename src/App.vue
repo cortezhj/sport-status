@@ -512,6 +512,17 @@ onMounted(() => {
                 </div>
               </div>
             </template>
+
+            <!-- PROMINENT ADD MATCH BUTTON -->
+            <button
+              v-if="matches.length < 4"
+              type="button"
+              class="add-match-bar-btn"
+              @click="addMatch"
+            >
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12m-6-6h12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
+              <span>+ Añadir otro encuentro ({{ matches.length }} de 4)</span>
+            </button>
           </section>
 
           <!-- SECTION 02: GAME DETAILS -->
