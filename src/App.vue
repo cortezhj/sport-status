@@ -90,7 +90,7 @@ const teamDataUrls = reactive<Record<string, string>>({})
 const bgDataUrls = reactive<Record<string, string>>({})
 
 const matches = reactive<Match[]>([
-  { id: 'm1', awayTeamId: 'cristo-el-salvador', homeTeamId: 'dios-es-bueno', time: '19:00' },
+  { id: 'm1', awayTeamId: 'cristo-el-salvador', homeTeamId: 'dios-es-bueno', time: '12:00' },
 ])
 
 const gameDate = ref(nextSaturday())
@@ -137,9 +137,11 @@ const gameYear = computed(() => gameDate.value ? new Date(`${gameDate.value}T12:
 const formatTime = (timeStr: string) => {
   if (!timeStr) return '--:--'
   const [hourValue, minutes = '00'] = timeStr.split(':')
-  const hour = Number(hourValue)
+  const hour = parseInt(hourValue, 10)
+  if (Number.isNaN(hour)) return timeStr
   const suffix = hour >= 12 ? 'PM' : 'AM'
-  return `${`${hour % 12 || 12}`.padStart(2, '0')}:${minutes} ${suffix}`
+  const hour12 = hour % 12 === 0 ? 12 : hour % 12
+  return `${hour12}:${minutes.padStart(2, '0')} ${suffix}`
 }
 
 const venueDisplay = computed(() => venue.value.trim().toLocaleUpperCase('es-VE') || 'SEDE POR CONFIRMAR')
@@ -297,8 +299,8 @@ const addMatch = () => {
     showNotice('Máximo 4 encuentros por cartel diario.')
     return
   }
-  const defaultTimes = ['09:00', '11:30', '14:00', '16:30']
-  const nextTime = defaultTimes[matches.length] || '14:00'
+  const defaultTimes = ['12:00', '13:30', '15:00', '16:30']
+  const nextTime = defaultTimes[matches.length] || '16:30'
   const usedTeams = new Set(matches.flatMap((m) => [m.awayTeamId, m.homeTeamId]))
   const available = teams.filter((t) => !usedTeams.has(t.id))
   const awayId = available[0]?.id || teams[(matches.length * 2) % teams.length].id
@@ -488,6 +490,7 @@ onMounted(() => {
                     <label class="match-time-input-wrap">
                       <span>Hora:</span>
                       <input v-model="match.time" type="time" required />
+                      <span class="match-time-preview">{{ formatTime(match.time) }}</span>
                     </label>
                   </div>
                   <button
