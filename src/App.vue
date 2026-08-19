@@ -252,38 +252,38 @@ const formatMultiName = (name: string, layout: 'two' | 'three' | 'four') => {
 
   if (layout === 'three') {
     if (upper === 'FRATERNIDAD CRISTIANA') {
-      return { lines: ['FRATERNIDAD', 'CRISTIANA'], fontSize: 17, startY: -1, lineHeight: 19 }
+      return { lines: ['FRATERNIDAD', 'CRISTIANA'], fontSize: 20, startY: -3, lineHeight: 22 }
     }
     if (upper === 'CRISTO EL SALVADOR') {
-      return { lines: ['CRISTO EL', 'SALVADOR'], fontSize: 18, startY: -1, lineHeight: 19 }
+      return { lines: ['CRISTO EL', 'SALVADOR'], fontSize: 21, startY: -3, lineHeight: 22 }
     }
     if (upper === 'DIOS ES BUENO') {
-      return { lines: ['DIOS ES', 'BUENO'], fontSize: 19, startY: -1, lineHeight: 20 }
+      return { lines: ['DIOS ES', 'BUENO'], fontSize: 22, startY: -3, lineHeight: 23 }
     }
     if (upper.length > 12) {
       const words = upper.split(' ')
       const mid = Math.ceil(words.length / 2)
-      return { lines: [words.slice(0, mid).join(' '), words.slice(mid).join(' ')], fontSize: 17, startY: -1, lineHeight: 19 }
+      return { lines: [words.slice(0, mid).join(' '), words.slice(mid).join(' ')], fontSize: 20, startY: -3, lineHeight: 22 }
     }
-    return { lines: [upper], fontSize: 22, startY: 8, lineHeight: 0 }
+    return { lines: [upper], fontSize: 26, startY: 8, lineHeight: 0 }
   }
 
   // layout === 'four'
   if (upper === 'FRATERNIDAD CRISTIANA') {
-    return { lines: ['FRATERNIDAD', 'CRISTIANA'], fontSize: 14, startY: -1, lineHeight: 16 }
+    return { lines: ['FRATERNIDAD', 'CRISTIANA'], fontSize: 17, startY: -3, lineHeight: 18 }
   }
   if (upper === 'CRISTO EL SALVADOR') {
-    return { lines: ['CRISTO EL', 'SALVADOR'], fontSize: 15, startY: -1, lineHeight: 16 }
+    return { lines: ['CRISTO EL', 'SALVADOR'], fontSize: 18, startY: -3, lineHeight: 19 }
   }
   if (upper === 'DIOS ES BUENO') {
-    return { lines: ['DIOS ES', 'BUENO'], fontSize: 16, startY: -1, lineHeight: 17 }
+    return { lines: ['DIOS ES', 'BUENO'], fontSize: 19, startY: -3, lineHeight: 20 }
   }
   if (upper.length > 12) {
     const words = upper.split(' ')
     const mid = Math.ceil(words.length / 2)
-    return { lines: [words.slice(0, mid).join(' '), words.slice(mid).join(' ')], fontSize: 14, startY: -1, lineHeight: 16 }
+    return { lines: [words.slice(0, mid).join(' '), words.slice(mid).join(' ')], fontSize: 17, startY: -3, lineHeight: 18 }
   }
-  return { lines: [upper], fontSize: 19, startY: 7, lineHeight: 0 }
+  return { lines: [upper], fontSize: 22, startY: 8, lineHeight: 0 }
 }
 
 const showNotice = (message: string) => {
