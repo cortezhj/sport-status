@@ -1,11 +1,10 @@
-# Diamante · Game Day Studio
+# Game Day Studio
 
-Generador visual de enfrentamientos de béisbol construido con Vue 3, TypeScript y Vite.
+Generador visual de enfrentamientos de Sofball construido con Vue 3, TypeScript y Vite.
 
 ## Funciones
 
 - Selección de equipo visitante y local.
-- Emblemas vectoriales incluidos y carga opcional de logos personalizados.
 - Fecha, hora, estadio y etiqueta editables.
 - Tres colores de acento con vista previa en tiempo real.
 - Exportación local a PNG de 1080 × 1080 px.
