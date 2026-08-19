@@ -389,27 +389,27 @@ onMounted(() => {
             </div>
           </section>
 
-          <!-- SECTION 03: THEME ACCENT COLOR -->
+          <!-- SECTION 03: POSTER BACKGROUND IMAGE -->
           <section class="form-section compact-section">
-            <div class="section-heading theme-heading"><span>03</span><div><h2>Color de acento</h2><p>El toque final del cartel</p></div></div>
-            <div class="theme-options" role="radiogroup" aria-label="Color de acento">
-              <label v-for="theme in themes" :key="theme.id" :class="{ active: selectedThemeId === theme.id }">
-                <input v-model="selectedThemeId" type="radio" name="theme" :value="theme.id" />
-                <i :style="{ background: theme.accent }"></i>
-                <span>{{ theme.name }}</span>
-                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 8 2.5 2.5L12 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
-              </label>
-            </div>
-          </section>
-
-          <!-- SECTION 04: POSTER BACKGROUND IMAGE -->
-          <section class="form-section compact-section">
-            <div class="section-heading theme-heading"><span>04</span><div><h2>Fondo del cartel</h2><p>Elige el ambiente del estadio</p></div></div>
+            <div class="section-heading theme-heading"><span>03</span><div><h2>Fondo del cartel</h2><p>Elige el ambiente del estadio</p></div></div>
             <div class="bg-options" role="radiogroup" aria-label="Fondo del cartel">
               <label v-for="bg in backgrounds" :key="bg.id" :class="{ active: selectedBgId === bg.id }">
                 <input v-model="selectedBgId" type="radio" name="posterBg" :value="bg.id" />
                 <span class="bg-thumb" :style="{ backgroundImage: `url(${bgDataUrls[bg.id] || bg.asset})` }"></span>
                 <span>{{ bg.name }}</span>
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 8 2.5 2.5L12 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </label>
+            </div>
+          </section>
+
+          <!-- SECTION 04: THEME ACCENT COLOR -->
+          <section class="form-section compact-section">
+            <div class="section-heading theme-heading"><span>04</span><div><h2>Color de acento</h2><p>El toque final del cartel</p></div></div>
+            <div class="theme-options" role="radiogroup" aria-label="Color de acento">
+              <label v-for="theme in themes" :key="theme.id" :class="{ active: selectedThemeId === theme.id }">
+                <input v-model="selectedThemeId" type="radio" name="theme" :value="theme.id" />
+                <i :style="{ background: theme.accent }"></i>
+                <span>{{ theme.name }}</span>
                 <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 8 2.5 2.5L12 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
               </label>
             </div>
