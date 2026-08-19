@@ -473,10 +473,9 @@ onMounted(() => {
                 v-for="(match, mIdx) in matches"
                 :key="match.id"
                 class="match-card-box"
-                :class="{ 'single-match-box': matches.length === 1 }"
               >
-                <!-- TOP HEADER BAR (SHOWN WHEN > 1 MATCH) -->
-                <div v-if="matches.length > 1" class="match-box-top">
+                <!-- TOP HEADER BAR (CONSISTENT & STABLE) -->
+                <div class="match-box-top">
                   <div class="match-box-top-left">
                     <span class="match-badge-tag">Juego {{ mIdx + 1 }}</span>
                     <label class="match-time-input-wrap">
@@ -485,6 +484,7 @@ onMounted(() => {
                     </label>
                   </div>
                   <button
+                    v-if="matches.length > 1"
                     type="button"
                     class="remove-match-btn"
                     @click="removeMatch(mIdx)"
@@ -537,13 +537,12 @@ onMounted(() => {
             </TransitionGroup>
           </section>
 
-          <!-- SECTION 02: GAME DETAILS -->
+          <!-- SECTION 02: GAME DETAILS (STABLE LAYOUT) -->
           <section class="form-section">
             <div class="section-heading"><span>02</span><div><h2>Datos del juego</h2><p>Define cuándo y dónde</p></div></div>
             <div class="field-grid">
               <label class="input-field"><span>Fecha</span><span class="input-shell"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3v3m10-3v3M3.5 8h13M4 5h12a1 1 0 0 1 1 1v10H3V6a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg><input v-model="gameDate" type="date" required /></span></label>
-              <label v-if="matches.length === 1" class="input-field"><span>Hora</span><span class="input-shell"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="M10 6v4l2.8 1.7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg><input v-model="matches[0].time" type="time" required /></span></label>
-              <label class="input-field" :class="{ 'field-wide': matches.length > 1 }"><span>Estadio</span><span class="input-shell"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 17s5-4.6 5-9a5 5 0 1 0-10 0c0 4.4 5 9 5 9Z" fill="none" stroke="currentColor" stroke-width="1.5" /><circle cx="10" cy="8" r="1.8" fill="none" stroke="currentColor" stroke-width="1.5" /></svg><input v-model="venue" list="venues" maxlength="54" placeholder="Nombre del estadio" required /></span></label>
+              <label class="input-field"><span>Estadio</span><span class="input-shell"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 17s5-4.6 5-9a5 5 0 1 0-10 0c0 4.4 5 9 5 9Z" fill="none" stroke="currentColor" stroke-width="1.5" /><circle cx="10" cy="8" r="1.8" fill="none" stroke="currentColor" stroke-width="1.5" /></svg><input v-model="venue" list="venues" maxlength="54" placeholder="Nombre del estadio" required /></span></label>
               <datalist id="venues"><option value="Estadio Felipe Rivas" /><option value="Campo Deportivo Principal" /><option value="Estadio Municipal" /></datalist>
               <label class="input-field field-wide"><span>Etiqueta <small>Opcional</small></span><span class="input-shell"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 4h8l4 4-8 8-4-4V4Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" /><circle cx="8" cy="8" r="1.2" fill="currentColor" /></svg><input v-model="eyebrow" maxlength="28" placeholder="Temporada regular" /></span></label>
             </div>
