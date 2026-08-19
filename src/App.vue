@@ -439,7 +439,7 @@ onMounted(() => {
     <main class="workspace">
       <aside class="control-panel">
         <div class="panel-intro">
-          <span class="section-kicker">CREADOR DE CARTELES</span>
+          <span class="section-kicker">CREADOR DE JORNADAS</span>
           <h1>Arma el próximo <em>juego.</em></h1>
           <p>Elige los equipos y descarga una pieza lista para publicar.</p>
         </div>
