@@ -403,8 +403,15 @@ const downloadPoster = async () => {
     const pngUrl = URL.createObjectURL(pngBlob)
     const link = document.createElement('a')
     link.href = pngUrl
-    const matchSuffix = matches.length === 1 ? `${getTeam(matches[0].awayTeamId).name}-vs-${getTeam(matches[0].homeTeamId).name}` : `jornada-${matches.length}-juegos`
-    link.download = `softball-liga-cristiana-${matchSuffix}.png`
+    let dateSuffix = 'fecha'
+    if (gameDate.value) {
+      const date = new Date(`${gameDate.value}T12:00:00`)
+      const weekday = new Intl.DateTimeFormat('es-VE', { weekday: 'long' }).format(date)
+      const cleanWeekday = weekday.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+      const day = `${date.getDate()}`.padStart(2, '0')
+      dateSuffix = `${cleanWeekday}-${day}`
+    }
+    link.download = `softball-liga-cristiana-${dateSuffix}.png`
     document.body.appendChild(link)
     link.click()
     link.remove()
