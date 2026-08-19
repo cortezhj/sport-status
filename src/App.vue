@@ -490,7 +490,6 @@ onMounted(() => {
                     <label class="match-time-input-wrap">
                       <span>Hora:</span>
                       <input v-model="match.time" type="time" required />
-                      <span class="match-time-preview">{{ formatTime(match.time) }}</span>
                     </label>
                   </div>
                   <button
