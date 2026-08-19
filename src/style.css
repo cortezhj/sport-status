@@ -70,8 +70,10 @@ button:disabled { cursor: not-allowed; }
 .add-match-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 6px 14px;
+  height: 33px;
+  padding: 0 13px;
   border: 1px solid #d7802b;
   border-radius: 9px;
   background: #fdf6ec;
@@ -84,17 +86,47 @@ button:disabled { cursor: not-allowed; }
   cursor: pointer;
   transition: all .2s ease;
   flex-shrink: 0;
+  line-height: 1;
 }
-.add-match-btn svg { width: 14px; height: 14px; }
+.add-match-btn svg { width: 14px; height: 14px; display: block; flex-shrink: 0; margin: 0; }
+.add-match-btn span { display: inline-block; line-height: 1; transform: translateY(0.5px); }
 .add-match-btn:hover { background: #d77920; color: #fff; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(215, 121, 32, .2); }
 
-.matches-stack { display: flex; flex-direction: column; gap: 14px; }
+.matches-stack { display: flex; flex-direction: column; gap: 14px; position: relative; }
 .match-card-box {
   border: 1px solid #d7ddd8;
   border-radius: 12px;
   background: #ffffff;
   padding: 14px 14px 16px;
   box-shadow: 0 2px 8px rgba(16, 32, 28, .04);
+  transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+
+/* Match card silky-smooth transitions */
+.match-card-enter-active {
+  transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.match-card-leave-active {
+  transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+.match-card-enter-from {
+  opacity: 0;
+  transform: translateY(-18px) scale(0.96);
+}
+.match-card-leave-to {
+  opacity: 0;
+  transform: translateY(-16px) scale(0.96);
+}
+.match-card-move {
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .match-box-top {
   display: flex;
