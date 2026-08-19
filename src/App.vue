@@ -467,109 +467,74 @@ onMounted(() => {
               </button>
             </div>
 
-            <!-- SINGLE MATCH (CLEAN & MINIMALIST) -->
-            <template v-if="matches.length === 1">
-              <div class="teams-control">
-                <!-- AWAY TEAM -->
-                <div class="team-field">
-                  <label for="away-team-0">Visitante</label>
-                  <div class="team-select-wrap">
-                    <span class="mini-crest" :style="{ '--team-color': getTeam(matches[0].awayTeamId).primary, '--team-accent': getTeam(matches[0].awayTeamId).secondary }" aria-hidden="true">
-                      <img :src="teamDataUrls[matches[0].awayTeamId] || getTeam(matches[0].awayTeamId).logo" :alt="getTeam(matches[0].awayTeamId).name" />
-                    </span>
-                    <select id="away-team-0" v-model="matches[0].awayTeamId">
-                      <option v-for="team in teams" :key="team.id" :value="team.id" :disabled="team.id === matches[0].homeTeamId">{{ team.fullName }}</option>
-                    </select>
-                    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
+            <!-- ANIMATED MATCHES STACK -->
+            <TransitionGroup name="match-card" tag="div" class="matches-stack">
+              <div
+                v-for="(match, mIdx) in matches"
+                :key="match.id"
+                class="match-card-box"
+                :class="{ 'single-match-box': matches.length === 1 }"
+              >
+                <!-- TOP HEADER BAR (SHOWN WHEN > 1 MATCH) -->
+                <div v-if="matches.length > 1" class="match-box-top">
+                  <div class="match-box-top-left">
+                    <span class="match-badge-tag">Juego {{ mIdx + 1 }}</span>
+                    <label class="match-time-input-wrap">
+                      <span>Hora:</span>
+                      <input v-model="match.time" type="time" required />
+                    </label>
+                  </div>
+                  <button
+                    type="button"
+                    class="remove-match-btn"
+                    @click="removeMatch(mIdx)"
+                    title="Eliminar este juego"
+                    aria-label="Eliminar este juego"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="teams-control">
+                  <!-- AWAY TEAM -->
+                  <div class="team-field">
+                    <label :for="`away-team-${mIdx}`">Visitante</label>
+                    <div class="team-select-wrap">
+                      <span class="mini-crest" :style="{ '--team-color': getTeam(match.awayTeamId).primary, '--team-accent': getTeam(match.awayTeamId).secondary }" aria-hidden="true">
+                        <img :src="teamDataUrls[match.awayTeamId] || getTeam(match.awayTeamId).logo" :alt="getTeam(match.awayTeamId).name" />
+                      </span>
+                      <select :id="`away-team-${mIdx}`" v-model="match.awayTeamId">
+                        <option v-for="team in teams" :key="team.id" :value="team.id" :disabled="team.id === match.homeTeamId">{{ team.fullName }}</option>
+                      </select>
+                      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
+                    </div>
+                  </div>
+
+                  <!-- SWAP BUTTON -->
+                  <button class="swap-button" type="button" aria-label="Intercambiar equipos" title="Intercambiar equipos" @click="swapTeams(match)">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11m0 0-3-3m3 3-3 3M17 17H6m0 0 3 3m-3-3 3-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                  </button>
+
+                  <!-- HOME TEAM -->
+                  <div class="team-field">
+                    <label :for="`home-team-${mIdx}`">Local</label>
+                    <div class="team-select-wrap">
+                      <span class="mini-crest" :style="{ '--team-color': getTeam(match.homeTeamId).primary, '--team-accent': getTeam(match.homeTeamId).secondary }" aria-hidden="true">
+                        <img :src="teamDataUrls[match.homeTeamId] || getTeam(match.homeTeamId).logo" :alt="getTeam(match.homeTeamId).name" />
+                      </span>
+                      <select :id="`home-team-${mIdx}`" v-model="match.homeTeamId">
+                        <option v-for="team in teams" :key="team.id" :value="team.id" :disabled="team.id === match.awayTeamId">{{ team.fullName }}</option>
+                      </select>
+                      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
+                    </div>
                   </div>
                 </div>
 
-                <!-- SWAP BUTTON -->
-                <button class="swap-button" type="button" aria-label="Intercambiar equipos" title="Intercambiar equipos" @click="swapTeams(matches[0])">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11m0 0-3-3m3 3-3 3M17 17H6m0 0 3 3m-3-3 3-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                </button>
-
-                <!-- HOME TEAM -->
-                <div class="team-field">
-                  <label for="home-team-0">Local</label>
-                  <div class="team-select-wrap">
-                    <span class="mini-crest" :style="{ '--team-color': getTeam(matches[0].homeTeamId).primary, '--team-accent': getTeam(matches[0].homeTeamId).secondary }" aria-hidden="true">
-                      <img :src="teamDataUrls[matches[0].homeTeamId] || getTeam(matches[0].homeTeamId).logo" :alt="getTeam(matches[0].homeTeamId).name" />
-                    </span>
-                    <select id="home-team-0" v-model="matches[0].homeTeamId">
-                      <option v-for="team in teams" :key="team.id" :value="team.id" :disabled="team.id === matches[0].awayTeamId">{{ team.fullName }}</option>
-                    </select>
-                    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
-                  </div>
-                </div>
+                <p v-if="match.awayTeamId === match.homeTeamId" class="field-error">Elige dos equipos diferentes para este juego.</p>
               </div>
-              <p v-if="matches[0].awayTeamId === matches[0].homeTeamId" class="field-error">Elige dos equipos diferentes.</p>
-            </template>
-
-            <!-- MULTIPLE MATCHES (STACK OF CLEAN CARDS) -->
-            <template v-else>
-              <div class="matches-stack">
-                <div v-for="(match, mIdx) in matches" :key="match.id" class="match-card-box">
-                  <div class="match-box-top">
-                    <div class="match-box-top-left">
-                      <span class="match-badge-tag">Juego {{ mIdx + 1 }}</span>
-                      <label class="match-time-input-wrap">
-                        <span>Hora:</span>
-                        <input v-model="match.time" type="time" required />
-                      </label>
-                    </div>
-                    <button
-                      type="button"
-                      class="remove-match-btn"
-                      @click="removeMatch(mIdx)"
-                      title="Eliminar este juego"
-                      aria-label="Eliminar este juego"
-                    >
-                      <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-                      </svg>
-                    </button>
-                  </div>
-
-                  <div class="teams-control">
-                    <!-- AWAY TEAM -->
-                    <div class="team-field">
-                      <label :for="`away-team-${mIdx}`">Visitante</label>
-                      <div class="team-select-wrap">
-                        <span class="mini-crest" :style="{ '--team-color': getTeam(match.awayTeamId).primary, '--team-accent': getTeam(match.awayTeamId).secondary }" aria-hidden="true">
-                          <img :src="teamDataUrls[match.awayTeamId] || getTeam(match.awayTeamId).logo" :alt="getTeam(match.awayTeamId).name" />
-                        </span>
-                        <select :id="`away-team-${mIdx}`" v-model="match.awayTeamId">
-                          <option v-for="team in teams" :key="team.id" :value="team.id" :disabled="team.id === match.homeTeamId">{{ team.fullName }}</option>
-                        </select>
-                        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
-                      </div>
-                    </div>
-
-                    <!-- SWAP BUTTON -->
-                    <button class="swap-button" type="button" aria-label="Intercambiar equipos" title="Intercambiar equipos" @click="swapTeams(match)">
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11m0 0-3-3m3 3-3 3M17 17H6m0 0 3 3m-3-3 3-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                    </button>
-
-                    <!-- HOME TEAM -->
-                    <div class="team-field">
-                      <label :for="`home-team-${mIdx}`">Local</label>
-                      <div class="team-select-wrap">
-                        <span class="mini-crest" :style="{ '--team-color': getTeam(match.homeTeamId).primary, '--team-accent': getTeam(match.homeTeamId).secondary }" aria-hidden="true">
-                          <img :src="teamDataUrls[match.homeTeamId] || getTeam(match.homeTeamId).logo" :alt="getTeam(match.homeTeamId).name" />
-                        </span>
-                        <select :id="`home-team-${mIdx}`" v-model="match.homeTeamId">
-                          <option v-for="team in teams" :key="team.id" :value="team.id" :disabled="team.id === match.awayTeamId">{{ team.fullName }}</option>
-                        </select>
-                        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
-                      </div>
-                    </div>
-                  </div>
-
-                  <p v-if="match.awayTeamId === match.homeTeamId" class="field-error">Elige dos equipos diferentes para este juego.</p>
-                </div>
-              </div>
-            </template>
+            </TransitionGroup>
           </section>
 
           <!-- SECTION 02: GAME DETAILS -->
