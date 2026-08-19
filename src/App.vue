@@ -1,6 +1,14 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import stadiumAsset from './assets/stadium-night.jpg'
+import logoLigaAsset from './assets/Logos/Logo de softball de la liga cristiana.png'
+import logoCristoElSalvador from './assets/Logos/optimized/cristo-el-salvador.png'
+import logoDiosEsBueno from './assets/Logos/optimized/dios-es-bueno.png'
+import logoFraternidadCristiana from './assets/Logos/optimized/fraternidad-cristiana.png'
+import logoIdp from './assets/Logos/optimized/idp.png'
+import logoJuan316 from './assets/Logos/optimized/juan-3-16.png'
+import logoLaRed from './assets/Logos/optimized/la-red.png'
+import logoLuzYVida from './assets/Logos/optimized/luz-y-vida.png'
 
 type TeamShape = 'shield' | 'round' | 'diamond'
 type TeamSlot = 'away' | 'home'
@@ -14,6 +22,7 @@ interface Team {
   primary: string
   secondary: string
   shape: TeamShape
+  logo: string
 }
 
 interface PosterTheme {
@@ -25,14 +34,13 @@ interface PosterTheme {
 }
 
 const teams: Team[] = [
-  { id: 'leones', name: 'Leones', fullName: 'Leones del Caracas', city: 'Caracas', abbr: 'LEO', primary: '#A4161A', secondary: '#F4C95D', shape: 'shield' },
-  { id: 'navegantes', name: 'Navegantes', fullName: 'Navegantes del Magallanes', city: 'Magallanes', abbr: 'NAV', primary: '#1769AA', secondary: '#F4F7FB', shape: 'round' },
-  { id: 'tiburones', name: 'Tiburones', fullName: 'Tiburones de La Guaira', city: 'La Guaira', abbr: 'TIB', primary: '#C62828', secondary: '#F7F8FA', shape: 'diamond' },
-  { id: 'cardenales', name: 'Cardenales', fullName: 'Cardenales de Lara', city: 'Lara', abbr: 'CAR', primary: '#8E1921', secondary: '#E9C46A', shape: 'shield' },
-  { id: 'tigres', name: 'Tigres', fullName: 'Tigres de Aragua', city: 'Aragua', abbr: 'TIG', primary: '#E76F2E', secondary: '#171E27', shape: 'round' },
-  { id: 'aguilas', name: 'Águilas', fullName: 'Águilas del Zulia', city: 'Zulia', abbr: 'AGU', primary: '#D96C19', secondary: '#202A44', shape: 'diamond' },
-  { id: 'caribes', name: 'Caribes', fullName: 'Caribes de Anzoátegui', city: 'Anzoátegui', abbr: 'CRI', primary: '#1C6E4A', secondary: '#F2A93B', shape: 'shield' },
-  { id: 'bravos', name: 'Bravos', fullName: 'Bravos de Margarita', city: 'Margarita', abbr: 'BRV', primary: '#5A2A82', secondary: '#2BB3B1', shape: 'round' },
+  { id: 'cristo-el-salvador', name: 'Cristo El Salvador', fullName: 'Cristo El Salvador', city: 'Liga Cristiana', abbr: 'CES', primary: '#0C4A6E', secondary: '#38BDF8', shape: 'shield', logo: logoCristoElSalvador },
+  { id: 'dios-es-bueno', name: 'Dios es Bueno', fullName: 'Dios es Bueno', city: 'Liga Cristiana', abbr: 'DEB', primary: '#D97706', secondary: '#FEF3C7', shape: 'round', logo: logoDiosEsBueno },
+  { id: 'fraternidad-cristiana', name: 'Fraternidad Cristiana', fullName: 'Fraternidad Cristiana', city: 'Liga Cristiana', abbr: 'FC', primary: '#1E40AF', secondary: '#93C5FD', shape: 'shield', logo: logoFraternidadCristiana },
+  { id: 'idp', name: 'IDP', fullName: 'IDP', city: 'Liga Cristiana', abbr: 'IDP', primary: '#2563EB', secondary: '#EF4444', shape: 'diamond', logo: logoIdp },
+  { id: 'juan-3-16', name: 'Juan 3:16', fullName: 'Juan 3:16', city: 'Liga Cristiana', abbr: 'J3:16', primary: '#991B1B', secondary: '#FDE047', shape: 'round', logo: logoJuan316 },
+  { id: 'la-red', name: 'La Red', fullName: 'La Red', city: 'Liga Cristiana', abbr: 'RED', primary: '#DC2626', secondary: '#1E293B', shape: 'shield', logo: logoLaRed },
+  { id: 'luz-y-vida', name: 'Luz y Vida', fullName: 'Luz y Vida', city: 'Liga Cristiana', abbr: 'LYV', primary: '#16A34A', secondary: '#FEF08A', shape: 'diamond', logo: logoLuzYVida },
 ]
 
 const themes: PosterTheme[] = [
@@ -53,19 +61,18 @@ const nextSaturday = () => {
 
 const posterSvg = ref<SVGSVGElement | null>(null)
 const stadiumDataUrl = ref('')
-const awayTeamId = ref('leones')
-const homeTeamId = ref('navegantes')
+const leagueLogoDataUrl = ref('')
+const teamDataUrls = reactive<Record<string, string>>({})
+const awayTeamId = ref('cristo-el-salvador')
+const homeTeamId = ref('dios-es-bueno')
 const gameDate = ref(nextSaturday())
 const gameTime = ref('19:00')
-const venue = ref('Estadio Monumental Simón Bolívar')
+const venue = ref('Estadio Felipe Rivas')
 const eyebrow = ref('TEMPORADA REGULAR')
 const selectedThemeId = ref('lights')
 const isExporting = ref(false)
 const notice = ref('')
 const noticeTimer = ref<number | undefined>()
-const customLogos = reactive<Record<TeamSlot, string>>({ away: '', home: '' })
-const logoUploadTokens = reactive<Record<TeamSlot, number>>({ away: 0, home: 0 })
-let stadiumLoadPromise: Promise<string> | null = null
 
 const awayTeam = computed(() => teams.find((team) => team.id === awayTeamId.value) ?? teams[0])
 const homeTeam = computed(() => teams.find((team) => team.id === homeTeamId.value) ?? teams[1])
@@ -113,14 +120,73 @@ const venueLines = computed(() => {
 const venueFontSize = computed(() => venueLines.value.length > 1 ? 23 : venueDisplay.value.length > 32 ? 25 : venueDisplay.value.length > 24 ? 29 : 34)
 const eyebrowDisplay = computed(() => eyebrow.value.trim().toLocaleUpperCase('es-VE').slice(0, 28) || 'TEMPORADA REGULAR')
 
-watch(awayTeamId, () => {
-  logoUploadTokens.away += 1
-  customLogos.away = ''
-})
-watch(homeTeamId, () => {
-  logoUploadTokens.home += 1
-  customLogos.home = ''
-})
+// Format team name dynamically for best typography in the SVG poster
+const formatTeamName = (name: string) => {
+  const upper = name.toLocaleUpperCase('es-VE').trim()
+  if (upper === 'FRATERNIDAD CRISTIANA') {
+    return {
+      lines: ['FRATERNIDAD', 'CRISTIANA'],
+      fontSize: 27,
+      startY: 642,
+      lineHeight: 31,
+      cityY: 704,
+    }
+  }
+  if (upper === 'CRISTO EL SALVADOR') {
+    return {
+      lines: ['CRISTO EL', 'SALVADOR'],
+      fontSize: 28,
+      startY: 642,
+      lineHeight: 31,
+      cityY: 704,
+    }
+  }
+  if (upper === 'DIOS ES BUENO') {
+    return {
+      lines: ['DIOS ES', 'BUENO'],
+      fontSize: 30,
+      startY: 642,
+      lineHeight: 32,
+      cityY: 704,
+    }
+  }
+  if (upper === 'LUZ Y VIDA') {
+    return {
+      lines: ['LUZ Y VIDA'],
+      fontSize: 36,
+      startY: 658,
+      lineHeight: 0,
+      cityY: 690,
+    }
+  }
+  if (upper.length <= 10) {
+    return {
+      lines: [upper],
+      fontSize: upper.length <= 4 ? 42 : 38,
+      startY: 658,
+      lineHeight: 0,
+      cityY: 690,
+    }
+  }
+  const words = upper.split(' ')
+  if (words.length >= 2) {
+    const mid = Math.ceil(words.length / 2)
+    return {
+      lines: [words.slice(0, mid).join(' '), words.slice(mid).join(' ')],
+      fontSize: 28,
+      startY: 642,
+      lineHeight: 31,
+      cityY: 704,
+    }
+  }
+  return {
+    lines: [upper],
+    fontSize: 32,
+    startY: 658,
+    lineHeight: 0,
+    cityY: 690,
+  }
+}
 
 const showNotice = (message: string) => {
   notice.value = message
@@ -130,94 +196,41 @@ const showNotice = (message: string) => {
 
 const swapTeams = () => {
   const previousAway = awayTeamId.value
-  const previousAwayLogo = customLogos.away
-  const previousHomeLogo = customLogos.home
   awayTeamId.value = homeTeamId.value
   homeTeamId.value = previousAway
-  nextTick(() => {
-    customLogos.away = previousHomeLogo
-    customLogos.home = previousAwayLogo
-  })
 }
 
-const handleLogoUpload = async (slot: TeamSlot, event: Event) => {
-  const input = event.target as HTMLInputElement
-  const file = input.files?.[0]
-  if (!file) return
-  const supportedTypes = new Set(['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'])
-  if (!supportedTypes.has(file.type)) {
-    showNotice('Selecciona un archivo de imagen válido.')
-    input.value = ''
-    return
-  }
-  if (file.size > 3 * 1024 * 1024) {
-    showNotice('El logo debe pesar menos de 3 MB.')
-    input.value = ''
-    return
-  }
-
-  const uploadToken = ++logoUploadTokens[slot]
-  const selectedTeamId = slot === 'away' ? awayTeamId.value : homeTeamId.value
-  const sourceUrl = URL.createObjectURL(file)
+const urlToDataUrl = async (url: string): Promise<string> => {
   try {
-    const image = new Image()
-    image.decoding = 'async'
-    image.src = sourceUrl
-    await image.decode()
-    if (!image.naturalWidth || !image.naturalHeight || image.naturalWidth * image.naturalHeight > 25_000_000) {
-      throw new Error('Dimensiones de logo no válidas')
-    }
-
-    const canvas = document.createElement('canvas')
-    canvas.width = 512
-    canvas.height = 512
-    const context = canvas.getContext('2d')
-    if (!context) throw new Error('No se pudo procesar el logo')
-    const availableSize = 464
-    const scale = Math.min(availableSize / image.naturalWidth, availableSize / image.naturalHeight)
-    const width = image.naturalWidth * scale
-    const height = image.naturalHeight * scale
-    context.drawImage(image, (512 - width) / 2, (512 - height) / 2, width, height)
-    const normalizedLogo = canvas.toDataURL('image/png')
-
-    const currentTeamId = slot === 'away' ? awayTeamId.value : homeTeamId.value
-    if (uploadToken !== logoUploadTokens[slot] || currentTeamId !== selectedTeamId) return
-    customLogos[slot] = normalizedLogo
-    showNotice('Logo actualizado en la vista previa.')
-  } catch (error) {
-    console.error(error)
-    if (uploadToken === logoUploadTokens[slot]) showNotice('No pudimos leer ese logo. Prueba con otro archivo.')
-  } finally {
-    URL.revokeObjectURL(sourceUrl)
-    input.value = ''
-  }
-}
-
-const removeCustomLogo = (slot: TeamSlot) => {
-  logoUploadTokens[slot] += 1
-  customLogos[slot] = ''
-}
-
-const loadStadiumAsDataUrl = async () => {
-  if (stadiumDataUrl.value) return stadiumDataUrl.value
-  if (!stadiumLoadPromise) {
-    stadiumLoadPromise = (async () => {
-      const response = await fetch(stadiumAsset)
-      if (!response.ok) throw new Error('No se pudo cargar el fondo del estadio')
-      const blob = await response.blob()
-      stadiumDataUrl.value = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onload = () => resolve(String(reader.result))
-        reader.onerror = () => reject(reader.error)
-        reader.readAsDataURL(blob)
-      })
-      return stadiumDataUrl.value
-    })().catch((error) => {
-      stadiumLoadPromise = null
-      throw error
+    const response = await fetch(url)
+    if (!response.ok) throw new Error('Error al cargar imagen')
+    const blob = await response.blob()
+    return await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(String(reader.result))
+      reader.onerror = () => reject(reader.error)
+      reader.readAsDataURL(blob)
     })
+  } catch {
+    return url
   }
-  return stadiumLoadPromise
+}
+
+const preloadAssets = async () => {
+  try {
+    const [stadium, league] = await Promise.all([
+      urlToDataUrl(stadiumAsset),
+      urlToDataUrl(logoLigaAsset),
+    ])
+    stadiumDataUrl.value = stadium
+    leagueLogoDataUrl.value = league
+
+    for (const team of teams) {
+      teamDataUrls[team.id] = await urlToDataUrl(team.logo)
+    }
+  } catch (e) {
+    console.warn('Error precargando imágenes:', e)
+  }
 }
 
 const downloadPoster = async () => {
@@ -228,7 +241,7 @@ const downloadPoster = async () => {
   isExporting.value = true
   let svgUrl = ''
   try {
-    await loadStadiumAsDataUrl()
+    await preloadAssets()
     await nextTick()
 
     const svgClone = posterSvg.value.cloneNode(true) as SVGSVGElement
@@ -274,16 +287,16 @@ const downloadPoster = async () => {
 }
 
 onMounted(() => {
-  loadStadiumAsDataUrl().catch(() => { /* La vista previa conserva el recurso local. */ })
+  preloadAssets()
 })
 </script>
 
 <template>
   <div class="app-shell">
     <header class="topbar">
-      <a class="brand" href="#" aria-label="Diamante, inicio">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 40 40"><path d="M20 4 36 20 20 36 4 20Z" fill="none" stroke="currentColor" stroke-width="2.4" /><path d="M20 11 29 20 20 29 11 20Z" fill="currentColor" /><circle cx="20" cy="20" r="3.2" fill="#fff" /></svg>
+      <a class="brand" href="#" aria-label="Liga Deportiva Cristiana, inicio">
+        <span class="brand-mark brand-league-mark" aria-hidden="true">
+          <img :src="leagueLogoDataUrl || logoLigaAsset" alt="Liga Deportiva Cristiana" />
         </span>
         <span><strong>Liga Deportiva Cristiana</strong><small>Jugando para Cristo</small></span>
       </a>
@@ -302,39 +315,36 @@ onMounted(() => {
           <section class="form-section">
             <div class="section-heading"><span>01</span><div><h2>El enfrentamiento</h2><p>Selecciona visitante y local</p></div></div>
             <div class="teams-control">
+              <!-- AWAY TEAM -->
               <div class="team-field">
                 <label for="away-team">Visitante</label>
                 <div class="team-select-wrap">
                   <span class="mini-crest" :style="{ '--team-color': awayTeam.primary, '--team-accent': awayTeam.secondary }" aria-hidden="true">
-                    <img v-if="customLogos.away" :src="customLogos.away" alt="" /><b v-else>{{ awayTeam.abbr.slice(0, 2) }}</b>
+                    <img :src="teamDataUrls[awayTeam.id] || awayTeam.logo" :alt="awayTeam.name" />
                   </span>
                   <select id="away-team" v-model="awayTeamId">
                     <option v-for="team in teams" :key="team.id" :value="team.id" :disabled="team.id === homeTeamId">{{ team.fullName }}</option>
                   </select>
                   <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
                 </div>
-                <div class="logo-actions">
-                  <label class="upload-action"><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" :aria-label="`Subir logo del visitante, ${awayTeam.name}`" @change="handleLogoUpload('away', $event)" /><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 14V4m0 0L6.5 7.5M10 4l3.5 3.5M4 12.5V16h12v-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>{{ customLogos.away ? 'Cambiar logo' : 'Subir logo' }}</label>
-                  <button v-if="customLogos.away" type="button" class="clear-logo" :aria-label="`Quitar logo personalizado del visitante, ${awayTeam.name}`" @click="removeCustomLogo('away')">Quitar</button>
-                </div>
               </div>
 
-              <button class="swap-button" type="button" aria-label="Intercambiar equipos" title="Intercambiar equipos" @click="swapTeams"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11m0 0-3-3m3 3-3 3M17 17H6m0 0 3 3m-3-3 3-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg></button>
+              <!-- SWAP BUTTON -->
+              <button class="swap-button" type="button" aria-label="Intercambiar equipos" title="Intercambiar equipos" @click="swapTeams">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11m0 0-3-3m3 3-3 3M17 17H6m0 0 3 3m-3-3 3-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </button>
 
+              <!-- HOME TEAM -->
               <div class="team-field">
                 <label for="home-team">Local</label>
                 <div class="team-select-wrap">
                   <span class="mini-crest" :style="{ '--team-color': homeTeam.primary, '--team-accent': homeTeam.secondary }" aria-hidden="true">
-                    <img v-if="customLogos.home" :src="customLogos.home" alt="" /><b v-else>{{ homeTeam.abbr.slice(0, 2) }}</b>
+                    <img :src="teamDataUrls[homeTeam.id] || homeTeam.logo" :alt="homeTeam.name" />
                   </span>
                   <select id="home-team" v-model="homeTeamId">
                     <option v-for="team in teams" :key="team.id" :value="team.id" :disabled="team.id === awayTeamId">{{ team.fullName }}</option>
                   </select>
                   <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
-                </div>
-                <div class="logo-actions">
-                  <label class="upload-action"><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" :aria-label="`Subir logo del local, ${homeTeam.name}`" @change="handleLogoUpload('home', $event)" /><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 14V4m0 0L6.5 7.5M10 4l3.5 3.5M4 12.5V16h12v-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>{{ customLogos.home ? 'Cambiar logo' : 'Subir logo' }}</label>
-                  <button v-if="customLogos.home" type="button" class="clear-logo" :aria-label="`Quitar logo personalizado del local, ${homeTeam.name}`" @click="removeCustomLogo('home')">Quitar</button>
                 </div>
               </div>
             </div>
@@ -347,7 +357,7 @@ onMounted(() => {
               <label class="input-field"><span>Fecha</span><span class="input-shell"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3v3m10-3v3M3.5 8h13M4 5h12a1 1 0 0 1 1 1v10H3V6a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg><input v-model="gameDate" type="date" required /></span></label>
               <label class="input-field"><span>Hora</span><span class="input-shell"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="M10 6v4l2.8 1.7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg><input v-model="gameTime" type="time" required /></span></label>
               <label class="input-field field-wide"><span>Estadio</span><span class="input-shell"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 17s5-4.6 5-9a5 5 0 1 0-10 0c0 4.4 5 9 5 9Z" fill="none" stroke="currentColor" stroke-width="1.5" /><circle cx="10" cy="8" r="1.8" fill="none" stroke="currentColor" stroke-width="1.5" /></svg><input v-model="venue" list="venues" maxlength="54" placeholder="Nombre del estadio" required /></span></label>
-              <datalist id="venues"><option value="Estadio Monumental Simón Bolívar" /><option value="Estadio Universitario de Caracas" /><option value="José Bernardo Pérez" /><option value="Antonio Herrera Gutiérrez" /><option value="Luis Aparicio El Grande" /></datalist>
+              <datalist id="venues"><option value="Estadio Felipe Rivas" /><option value="Campo Deportivo Principal" /><option value="Estadio Municipal" /></datalist>
               <label class="input-field field-wide"><span>Etiqueta <small>Opcional</small></span><span class="input-shell"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 4h8l4 4-8 8-4-4V4Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" /><circle cx="8" cy="8" r="1.2" fill="currentColor" /></svg><input v-model="eyebrow" maxlength="28" placeholder="Temporada regular" /></span></label>
             </div>
           </section>
@@ -379,6 +389,7 @@ onMounted(() => {
               <pattern id="dotGrid" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.2" fill="#FFFFFF" fill-opacity=".09" /></pattern>
               <filter id="softShadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000000" flood-opacity=".42" /></filter>
               <filter id="logoShadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#000000" flood-opacity=".5" /></filter>
+              <clipPath id="leagueLogoClip"><circle cx="20" cy="20" r="20" /></clipPath>
               <clipPath id="logo-away"><circle cx="0" cy="0" r="91" /></clipPath><clipPath id="logo-home"><circle cx="0" cy="0" r="91" /></clipPath>
             </defs>
 
@@ -388,41 +399,92 @@ onMounted(() => {
             <g opacity=".24" fill="none" :stroke="selectedTheme.accent" stroke-width="2"><path d="M540 355 743 558 540 761 337 558Z" /><path d="M540 400 698 558 540 716 382 558Z" stroke-dasharray="7 13" /><circle cx="540" cy="558" r="7" :fill="selectedTheme.accent" stroke="none" /></g>
 
             <g font-family="Arial, Helvetica, sans-serif">
-              <g transform="translate(72 58)"><path d="M20 0 40 20 20 40 0 20Z" fill="none" :stroke="selectedTheme.accent" stroke-width="2" /><path d="M20 9 31 20 20 31 9 20Z" :fill="selectedTheme.accent" /><circle cx="20" cy="20" r="4" fill="#07131D" /><text x="56" y="17" fill="#FFFFFF" font-size="23" font-weight="800" letter-spacing="3">DIAMANTE</text><text x="56" y="37" fill="#FFFFFF" fill-opacity=".52" font-size="11" font-weight="600" letter-spacing="3.2">ESTUDIO DE JUEGO</text></g>
+              <!-- HEADER WITH LEAGUE LOGO -->
+              <g transform="translate(72 56)">
+                <circle cx="20" cy="20" r="22" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".25" stroke-width="1.5" />
+                <circle cx="20" cy="20" r="20" :fill="selectedTheme.accent" />
+                <image
+                  :href="leagueLogoDataUrl || logoLigaAsset"
+                  x="0"
+                  y="0"
+                  width="40"
+                  height="40"
+                  preserveAspectRatio="xMidYMid slice"
+                  clip-path="url(#leagueLogoClip)"
+                />
+                <text x="56" y="17" fill="#FFFFFF" font-size="23" font-weight="800" letter-spacing="3">LIGA CRISTIANA</text>
+                <text x="56" y="37" fill="#FFFFFF" fill-opacity=".52" font-size="11" font-weight="600" letter-spacing="3.2">JUGANDO PARA CRISTO</text>
+              </g>
+
               <g transform="translate(1008 61)" text-anchor="end"><text y="15" fill="#FFFFFF" fill-opacity=".54" font-size="11" font-weight="700" letter-spacing="2.5">JORNADA DE JUEGO</text><text y="38" fill="#FFFFFF" font-size="18" font-weight="800" letter-spacing="2">{{ gameYear }}</text></g>
               <path d="M72 122H1008" stroke="#FFFFFF" stroke-opacity=".17" /><path d="M72 122H245" :stroke="selectedTheme.accent" stroke-width="3" />
               <text x="540" y="174" text-anchor="middle" :fill="selectedTheme.accentSoft" font-size="15" font-weight="800" letter-spacing="6.2">{{ eyebrowDisplay }}</text>
               <text x="540" y="229" text-anchor="middle" fill="#FFFFFF" font-size="53" font-weight="900" letter-spacing="5">PRÓXIMO JUEGO</text>
               <text x="540" y="267" text-anchor="middle" fill="#FFFFFF" fill-opacity=".68" font-size="17" font-weight="700" letter-spacing="2.7">{{ formattedDate }}</text>
 
-              <g filter="url(#softShadow)"><rect x="72" y="302" width="936" height="496" rx="26" fill="url(#cardFill)" stroke="#FFFFFF" stroke-opacity=".15" /><path d="M72 363H1008" stroke="#FFFFFF" stroke-opacity=".12" /><path d="M72 731H1008" stroke="#FFFFFF" stroke-opacity=".12" /><path d="M540 363V731" stroke="#FFFFFF" stroke-opacity=".07" /><path d="M72 302H1008" :stroke="selectedTheme.accent" stroke-width="3" opacity=".9" /></g>
+              <g filter="url(#softShadow)"><rect x="72" y="302" width="936" height="496" rx="26" fill="url(#cardFill)" stroke="#FFFFFF" stroke-opacity=".15" /><path d="M72 363H1008" stroke="#FFFFFF" stroke-opacity=".12" /><path d="M540 363V770" stroke="#FFFFFF" stroke-opacity=".07" /><path d="M72 302H1008" :stroke="selectedTheme.accent" stroke-width="3" opacity=".9" /></g>
 
+              <!-- TEAMS SHOWCASE -->
               <g v-for="item in posterTeams" :key="item.slot" :transform="`translate(${item.x} 0)`">
                 <text x="0" y="341" text-anchor="middle" fill="#FFFFFF" fill-opacity=".48" font-size="13" font-weight="800" letter-spacing="4.5">{{ item.label }}</text>
-                <g transform="translate(0 501)" filter="url(#logoShadow)">
-                  <circle r="111" fill="#02080C" fill-opacity=".8" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="2" /><circle r="99" :fill="item.team.primary" /><circle r="91" fill="#FFFFFF" fill-opacity=".07" />
-                  <template v-if="!customLogos[item.slot]">
-                    <path v-if="item.team.shape === 'shield'" d="M-64-62H64V20C64 61 24 82 0 93-24 82-64 61-64 20Z" fill="#07131D" fill-opacity=".34" :stroke="item.team.secondary" stroke-width="5" />
-                    <g v-else-if="item.team.shape === 'round'"><circle r="69" fill="#07131D" fill-opacity=".3" :stroke="item.team.secondary" stroke-width="6" /><circle r="57" fill="none" :stroke="item.team.secondary" stroke-opacity=".42" stroke-width="2" stroke-dasharray="5 7" /></g>
-                    <g v-else transform="rotate(45)"><rect x="-57" y="-57" width="114" height="114" rx="16" fill="#07131D" fill-opacity=".32" :stroke="item.team.secondary" stroke-width="6" /></g>
-                    <path d="M-76-75Q0-38 76-75" fill="none" :stroke="item.team.secondary" stroke-opacity=".35" stroke-width="3" /><path d="M-76 75Q0 38 76 75" fill="none" :stroke="item.team.secondary" stroke-opacity=".35" stroke-width="3" />
-                    <text y="7" text-anchor="middle" dominant-baseline="middle" :fill="item.team.secondary" font-size="48" font-weight="900" letter-spacing="-1">{{ item.team.abbr }}</text>
-                  </template>
-                  <image v-else :href="customLogos[item.slot]" x="-91" y="-91" width="182" height="182" preserveAspectRatio="xMidYMid meet" :clip-path="`url(#logo-${item.slot})`" />
+                
+                <!-- CREST WITH EMBEDDED TEAM LOGO -->
+                <g transform="translate(0 488)" filter="url(#logoShadow)">
+                  <circle r="105" fill="#02080C" fill-opacity=".85" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="2" />
+                  <circle r="95" :fill="item.team.primary" />
+                  <circle r="88" fill="#FFFFFF" fill-opacity=".08" />
+                  <image
+                    :href="teamDataUrls[item.team.id] || item.team.logo"
+                    x="-76"
+                    y="-76"
+                    width="152"
+                    height="152"
+                    preserveAspectRatio="xMidYMid meet"
+                    :clip-path="`url(#logo-${item.slot})`"
+                  />
                 </g>
-                <text x="0" y="658" text-anchor="middle" fill="#FFFFFF" font-size="42" font-weight="900" letter-spacing="1">{{ item.team.name.toLocaleUpperCase('es-VE') }}</text>
-                <text x="0" y="689" text-anchor="middle" :fill="selectedTheme.accentSoft" font-size="15" font-weight="700" letter-spacing="4.5">{{ item.team.city.toLocaleUpperCase('es-VE') }}</text>
+
+                <!-- OPTIMIZED TEAM NAME (1 OR 2 LINES BASED ON LENGTH) -->
+                <text
+                  x="0"
+                  text-anchor="middle"
+                  fill="#FFFFFF"
+                  :font-size="formatTeamName(item.team.name).fontSize"
+                  font-weight="900"
+                  letter-spacing="1"
+                >
+                  <tspan
+                    v-for="(line, lIdx) in formatTeamName(item.team.name).lines"
+                    :key="lIdx"
+                    x="0"
+                    :y="formatTeamName(item.team.name).startY + lIdx * formatTeamName(item.team.name).lineHeight"
+                  >
+                    {{ line }}
+                  </tspan>
+                </text>
+
+                <!-- SUBTITLE CITY / LEAGUE -->
+                <text
+                  x="0"
+                  :y="formatTeamName(item.team.name).cityY"
+                  text-anchor="middle"
+                  :fill="selectedTheme.accentSoft"
+                  font-size="14"
+                  font-weight="700"
+                  letter-spacing="4.5"
+                >
+                  {{ item.team.city.toLocaleUpperCase('es-VE') }}
+                </text>
               </g>
 
               <g transform="translate(540 500)"><circle r="53" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="2" /><circle r="43" :fill="selectedTheme.accent" /><path d="M-29-24Q0-4 29-24M-29 24Q0 4 29 24" fill="none" stroke="#07131D" stroke-opacity=".45" stroke-width="2.5" /><text y="7" text-anchor="middle" dominant-baseline="middle" fill="#07131D" font-size="27" font-weight="900" letter-spacing="-1">VS</text></g>
-              <g transform="translate(120 752)"><circle cx="13" cy="13" r="13" :fill="selectedTheme.accent" fill-opacity=".15" /><path d="M13 5.5c-3.4 0-6 2.6-6 6 0 5 6 9.5 6 9.5s6-4.5 6-9.5c0-3.4-2.6-6-6-6Zm0 8.2a2.3 2.3 0 1 1 0-4.6 2.3 2.3 0 0 1 0 4.6Z" :fill="selectedTheme.accent" /><text x="39" y="18" fill="#FFFFFF" fill-opacity=".72" font-size="13" font-weight="700" letter-spacing="1.2">VENEZUELA · {{ gameYear }}</text></g>
 
               <g transform="translate(72 844)"><rect width="936" height="142" rx="22" fill="#050D12" fill-opacity=".9" stroke="#FFFFFF" stroke-opacity=".13" /><rect width="8" height="142" rx="4" :fill="selectedTheme.accent" />
                 <g transform="translate(47 34)"><path d="M18 0c-9.5 0-17 7.4-17 17 0 14.2 17 27 17 27s17-12.8 17-27C35 7.4 27.5 0 18 0Zm0 23.2a6.5 6.5 0 1 1 0-13 6.5 6.5 0 0 1 0 13Z" :fill="selectedTheme.accent" /><text x="55" y="10" fill="#FFFFFF" fill-opacity=".46" font-size="12" font-weight="800" letter-spacing="3.2">SEDE</text><text x="55" fill="#FFFFFF" :font-size="venueFontSize" font-weight="900" letter-spacing=".3"><tspan v-for="(line, index) in venueLines" :key="line" x="55" :y="venueLines.length > 1 ? 37 + index * 28 : 47">{{ line }}</tspan></text></g>
                 <path d="M720 24V118" stroke="#FFFFFF" stroke-opacity=".13" /><g transform="translate(828 25)" text-anchor="middle"><circle cy="17" r="17" fill="none" :stroke="selectedTheme.accent" stroke-width="2.5" /><path d="M0 7v11l7 4" fill="none" :stroke="selectedTheme.accent" stroke-width="2.5" stroke-linecap="round" /><text y="65" fill="#FFFFFF" fill-opacity=".46" font-size="10" font-weight="800" letter-spacing="2">PRIMER PITCHEO</text><text y="104" fill="#FFFFFF" font-size="29" font-weight="900" letter-spacing=".2">{{ formattedTime }}</text></g>
               </g>
 
-              <g transform="translate(72 1030)"><text fill="#FFFFFF" fill-opacity=".42" font-size="11" font-weight="700" letter-spacing="2.4">BÉISBOL · PASIÓN · TRADICIÓN</text><text x="936" text-anchor="end" fill="#FFFFFF" fill-opacity=".42" font-size="11" font-weight="700" letter-spacing="2.4">#DÍADEJUEGO</text></g>
+              <g transform="translate(72 1030)"><text fill="#FFFFFF" fill-opacity=".42" font-size="11" font-weight="700" letter-spacing="2.4">SOFTBALL · PASIÓN · TRADICIÓN</text><text x="936" text-anchor="end" fill="#FFFFFF" fill-opacity=".42" font-size="11" font-weight="700" letter-spacing="2.4">#DÍADEJUEGO</text></g>
               <rect x="0" y="1071" width="1080" height="9" :fill="selectedTheme.accent" /><rect x="238" y="1071" width="604" height="9" fill="url(#accentLine)" />
             </g>
           </svg>
