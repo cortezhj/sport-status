@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import stadiumAsset from './assets/stadium-night.jpg'
+import bgStadiumNight from './assets/backgrounds/stadium-night.jpg'
+import bgSoftballDay from './assets/backgrounds/softball-day.jpg'
+import bgStadiumLights from './assets/backgrounds/stadium-lights.jpg'
+import bgStadiumSunset from './assets/backgrounds/stadium-sunset.jpg'
 import logoLigaAsset from './assets/Logos/Logo de softball de la liga cristiana.png'
 import logoCristoElSalvador from './assets/Logos/optimized/cristo-el-salvador.png'
 import logoDiosEsBueno from './assets/Logos/optimized/dios-es-bueno.png'
@@ -33,6 +37,12 @@ interface PosterTheme {
   ink: string
 }
 
+interface PosterBg {
+  id: string
+  name: string
+  asset: string
+}
+
 const teams: Team[] = [
   { id: 'cristo-el-salvador', name: 'Cristo El Salvador', fullName: 'Cristo El Salvador', city: 'Liga Cristiana', abbr: 'CES', primary: '#0C4A6E', secondary: '#38BDF8', shape: 'shield', logo: logoCristoElSalvador },
   { id: 'dios-es-bueno', name: 'Dios es Bueno', fullName: 'Dios es Bueno', city: 'Liga Cristiana', abbr: 'DEB', primary: '#D97706', secondary: '#FEF3C7', shape: 'round', logo: logoDiosEsBueno },
@@ -49,6 +59,13 @@ const themes: PosterTheme[] = [
   { id: 'heat', name: 'Fuego', accent: '#F06645', accentSoft: '#FFB29D', ink: '#1B0F12' },
 ]
 
+const backgrounds: PosterBg[] = [
+  { id: 'night', name: 'Estadio Noche', asset: bgStadiumNight },
+  { id: 'day', name: 'Campo de Día', asset: bgSoftballDay },
+  { id: 'lights', name: 'Reflectores Pro', asset: bgStadiumLights },
+  { id: 'sunset', name: 'Atardecer', asset: bgStadiumSunset },
+]
+
 const nextSaturday = () => {
   const date = new Date()
   const days = (6 - date.getDay() + 7) % 7 || 7
@@ -63,6 +80,8 @@ const posterSvg = ref<SVGSVGElement | null>(null)
 const stadiumDataUrl = ref('')
 const leagueLogoDataUrl = ref('')
 const teamDataUrls = reactive<Record<string, string>>({})
+const bgDataUrls = reactive<Record<string, string>>({})
+
 const awayTeamId = ref('cristo-el-salvador')
 const homeTeamId = ref('dios-es-bueno')
 const gameDate = ref(nextSaturday())
@@ -70,6 +89,7 @@ const gameTime = ref('19:00')
 const venue = ref('Estadio Felipe Rivas')
 const eyebrow = ref('TEMPORADA REGULAR')
 const selectedThemeId = ref('lights')
+const selectedBgId = ref('night')
 const isExporting = ref(false)
 const notice = ref('')
 const noticeTimer = ref<number | undefined>()
@@ -77,6 +97,7 @@ const noticeTimer = ref<number | undefined>()
 const awayTeam = computed(() => teams.find((team) => team.id === awayTeamId.value) ?? teams[0])
 const homeTeam = computed(() => teams.find((team) => team.id === homeTeamId.value) ?? teams[1])
 const selectedTheme = computed(() => themes.find((theme) => theme.id === selectedThemeId.value) ?? themes[0])
+const currentBg = computed(() => backgrounds.find((b) => b.id === selectedBgId.value) ?? backgrounds[0])
 const hasTeamConflict = computed(() => awayTeamId.value === homeTeamId.value)
 const isFormComplete = computed(() => Boolean(gameDate.value && gameTime.value && venue.value.trim() && !hasTeamConflict.value))
 
@@ -228,6 +249,10 @@ const preloadAssets = async () => {
     for (const team of teams) {
       teamDataUrls[team.id] = await urlToDataUrl(team.logo)
     }
+
+    for (const bg of backgrounds) {
+      bgDataUrls[bg.id] = await urlToDataUrl(bg.asset)
+    }
   } catch (e) {
     console.warn('Error precargando imágenes:', e)
   }
@@ -312,6 +337,7 @@ onMounted(() => {
         </div>
 
         <form class="match-form" @submit.prevent="downloadPoster">
+          <!-- SECTION 01: TEAMS -->
           <section class="form-section">
             <div class="section-heading"><span>01</span><div><h2>El enfrentamiento</h2><p>Selecciona visitante y local</p></div></div>
             <div class="teams-control">
@@ -351,6 +377,7 @@ onMounted(() => {
             <p v-if="hasTeamConflict" class="field-error">Elige dos equipos diferentes.</p>
           </section>
 
+          <!-- SECTION 02: GAME DETAILS -->
           <section class="form-section">
             <div class="section-heading"><span>02</span><div><h2>Datos del juego</h2><p>Define cuándo y dónde</p></div></div>
             <div class="field-grid">
@@ -362,15 +389,38 @@ onMounted(() => {
             </div>
           </section>
 
+          <!-- SECTION 03: THEME ACCENT COLOR -->
           <section class="form-section compact-section">
             <div class="section-heading theme-heading"><span>03</span><div><h2>Color de acento</h2><p>El toque final del cartel</p></div></div>
             <div class="theme-options" role="radiogroup" aria-label="Color de acento">
-              <label v-for="theme in themes" :key="theme.id" :class="{ active: selectedThemeId === theme.id }"><input v-model="selectedThemeId" type="radio" name="theme" :value="theme.id" /><i :style="{ background: theme.accent }"></i><span>{{ theme.name }}</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 8 2.5 2.5L12 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg></label>
+              <label v-for="theme in themes" :key="theme.id" :class="{ active: selectedThemeId === theme.id }">
+                <input v-model="selectedThemeId" type="radio" name="theme" :value="theme.id" />
+                <i :style="{ background: theme.accent }"></i>
+                <span>{{ theme.name }}</span>
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 8 2.5 2.5L12 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </label>
+            </div>
+          </section>
+
+          <!-- SECTION 04: POSTER BACKGROUND IMAGE -->
+          <section class="form-section compact-section">
+            <div class="section-heading theme-heading"><span>04</span><div><h2>Fondo del cartel</h2><p>Elige el ambiente del estadio</p></div></div>
+            <div class="bg-options" role="radiogroup" aria-label="Fondo del cartel">
+              <label v-for="bg in backgrounds" :key="bg.id" :class="{ active: selectedBgId === bg.id }">
+                <input v-model="selectedBgId" type="radio" name="posterBg" :value="bg.id" />
+                <span class="bg-thumb" :style="{ backgroundImage: `url(${bgDataUrls[bg.id] || bg.asset})` }"></span>
+                <span>{{ bg.name }}</span>
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 8 2.5 2.5L12 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </label>
             </div>
           </section>
 
           <div class="form-actions">
-            <button class="download-button" type="submit" :disabled="isExporting"><svg v-if="!isExporting" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg><span v-else class="button-spinner" aria-hidden="true"></span>{{ isExporting ? 'Preparando cartel…' : 'Descargar cartel PNG' }}</button>
+            <button class="download-button" type="submit" :disabled="isExporting">
+              <svg v-if="!isExporting" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              <span v-else class="button-spinner" aria-hidden="true"></span>
+              {{ isExporting ? 'Preparando cartel…' : 'Descargar cartel PNG' }}
+            </button>
             <p><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5 13.5 4v3.8c0 3.3-2.3 5.6-5.5 6.7-3.2-1.1-5.5-3.4-5.5-6.7V4L8 1.5Z" fill="none" stroke="currentColor" stroke-width="1.2" /><path d="m5.5 8 1.6 1.6 3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" /></svg> Se procesa en tu navegador. Nada se publica.</p>
           </div>
         </form>
@@ -393,8 +443,9 @@ onMounted(() => {
               <clipPath id="logo-away"><circle cx="0" cy="0" r="91" /></clipPath><clipPath id="logo-home"><circle cx="0" cy="0" r="91" /></clipPath>
             </defs>
 
+            <!-- Background Image and overlays -->
             <rect width="1080" height="1080" fill="#061018" />
-            <image :href="stadiumDataUrl || stadiumAsset" width="1080" height="1080" preserveAspectRatio="xMidYMid slice" />
+            <image :href="bgDataUrls[currentBg.id] || currentBg.asset" width="1080" height="1080" preserveAspectRatio="xMidYMid slice" />
             <rect width="1080" height="1080" fill="url(#posterShade)" /><rect width="1080" height="1080" fill="url(#stadiumGlow)" /><rect width="1080" height="1080" fill="url(#dotGrid)" opacity=".26" />
             <g opacity=".24" fill="none" :stroke="selectedTheme.accent" stroke-width="2"><path d="M540 355 743 558 540 761 337 558Z" /><path d="M540 400 698 558 540 716 382 558Z" stroke-dasharray="7 13" /><circle cx="540" cy="558" r="7" :fill="selectedTheme.accent" stroke="none" /></g>
 
