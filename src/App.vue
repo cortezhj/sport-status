@@ -467,9 +467,11 @@ onMounted(() => {
                       class="remove-match-btn"
                       @click="removeMatch(mIdx)"
                       title="Eliminar este juego"
+                      aria-label="Eliminar este juego"
                     >
-                      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
-                      <span>Quitar</span>
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
                     </button>
                   </div>
 
@@ -512,17 +514,6 @@ onMounted(() => {
                 </div>
               </div>
             </template>
-
-            <!-- PROMINENT ADD MATCH BUTTON -->
-            <button
-              v-if="matches.length < 4"
-              type="button"
-              class="add-match-bar-btn"
-              @click="addMatch"
-            >
-              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12m-6-6h12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
-              <span>+ Añadir otro encuentro ({{ matches.length }} de 4)</span>
-            </button>
           </section>
 
           <!-- SECTION 02: GAME DETAILS -->

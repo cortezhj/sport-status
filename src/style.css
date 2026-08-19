@@ -88,38 +88,6 @@ button:disabled { cursor: not-allowed; }
 .add-match-btn svg { width: 14px; height: 14px; }
 .add-match-btn:hover { background: #d77920; color: #fff; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(215, 121, 32, .2); }
 
-.add-match-bar-btn {
-  width: 100%;
-  height: 48px;
-  margin-top: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border: 1.5px dashed #d7802b;
-  border-radius: 11px;
-  background: #fdfaf6;
-  color: #bf661d;
-  font-family: 'Bahnschrift Condensed', 'Arial Narrow', sans-serif;
-  font-size: 14px;
-  font-weight: 900;
-  letter-spacing: .9px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all .2s ease;
-}
-.add-match-bar-btn:hover {
-  background: #d77920;
-  border-style: solid;
-  color: #ffffff;
-  box-shadow: 0 4px 14px rgba(215, 121, 32, .25);
-  transform: translateY(-1px);
-}
-.add-match-bar-btn svg {
-  width: 16px;
-  height: 16px;
-}
-
 .matches-stack { display: flex; flex-direction: column; gap: 14px; }
 .match-card-box {
   border: 1px solid #d7ddd8;
@@ -175,21 +143,26 @@ button:disabled { cursor: not-allowed; }
   border-color: #c4772d;
 }
 .remove-match-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  border: 0;
-  background: transparent;
-  color: #b74031;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #f2dcd9;
+  border-radius: 8px;
+  background: #fdf3f2;
+  color: #c0392b;
   cursor: pointer;
-  transition: background .15s;
+  padding: 0;
+  transition: all .2s ease;
 }
-.remove-match-btn svg { width: 12px; height: 12px; }
-.remove-match-btn:hover { background: #fdf1f0; }
+.remove-match-btn svg { width: 16px; height: 16px; }
+.remove-match-btn:hover {
+  background: #c0392b;
+  border-color: #c0392b;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(192, 57, 43, .22);
+}
 
 .teams-control { display: grid; grid-template-columns: minmax(0, 1fr) 36px minmax(0, 1fr); align-items: flex-end; gap: 10px; }
 .team-field > label, .input-field > span:first-child { display: block; margin: 0 0 8px; color: #59635f; font-size: 10px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; }
