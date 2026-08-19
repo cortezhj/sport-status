@@ -230,6 +230,62 @@ const formatTeamName = (name: string) => {
   }
 }
 
+const formatMultiName = (name: string, layout: 'two' | 'three' | 'four') => {
+  const upper = name.toLocaleUpperCase('es-VE').trim()
+  if (layout === 'two') {
+    if (upper === 'FRATERNIDAD CRISTIANA') {
+      return { lines: ['FRATERNIDAD', 'CRISTIANA'], fontSize: 20, startY: -10, lineHeight: 22, labelY: 34 }
+    }
+    if (upper === 'CRISTO EL SALVADOR') {
+      return { lines: ['CRISTO EL', 'SALVADOR'], fontSize: 21, startY: -10, lineHeight: 22, labelY: 34 }
+    }
+    if (upper === 'DIOS ES BUENO') {
+      return { lines: ['DIOS ES', 'BUENO'], fontSize: 22, startY: -10, lineHeight: 23, labelY: 34 }
+    }
+    if (upper.length > 12) {
+      const words = upper.split(' ')
+      const mid = Math.ceil(words.length / 2)
+      return { lines: [words.slice(0, mid).join(' '), words.slice(mid).join(' ')], fontSize: 20, startY: -10, lineHeight: 22, labelY: 34 }
+    }
+    return { lines: [upper], fontSize: 24, startY: 0, lineHeight: 0, labelY: 23 }
+  }
+
+  if (layout === 'three') {
+    if (upper === 'FRATERNIDAD CRISTIANA') {
+      return { lines: ['FRATERNIDAD', 'CRISTIANA'], fontSize: 17, startY: -1, lineHeight: 19 }
+    }
+    if (upper === 'CRISTO EL SALVADOR') {
+      return { lines: ['CRISTO EL', 'SALVADOR'], fontSize: 18, startY: -1, lineHeight: 19 }
+    }
+    if (upper === 'DIOS ES BUENO') {
+      return { lines: ['DIOS ES', 'BUENO'], fontSize: 19, startY: -1, lineHeight: 20 }
+    }
+    if (upper.length > 12) {
+      const words = upper.split(' ')
+      const mid = Math.ceil(words.length / 2)
+      return { lines: [words.slice(0, mid).join(' '), words.slice(mid).join(' ')], fontSize: 17, startY: -1, lineHeight: 19 }
+    }
+    return { lines: [upper], fontSize: 22, startY: 8, lineHeight: 0 }
+  }
+
+  // layout === 'four'
+  if (upper === 'FRATERNIDAD CRISTIANA') {
+    return { lines: ['FRATERNIDAD', 'CRISTIANA'], fontSize: 14, startY: -1, lineHeight: 16 }
+  }
+  if (upper === 'CRISTO EL SALVADOR') {
+    return { lines: ['CRISTO EL', 'SALVADOR'], fontSize: 15, startY: -1, lineHeight: 16 }
+  }
+  if (upper === 'DIOS ES BUENO') {
+    return { lines: ['DIOS ES', 'BUENO'], fontSize: 16, startY: -1, lineHeight: 17 }
+  }
+  if (upper.length > 12) {
+    const words = upper.split(' ')
+    const mid = Math.ceil(words.length / 2)
+    return { lines: [words.slice(0, mid).join(' '), words.slice(mid).join(' ')], fontSize: 14, startY: -1, lineHeight: 16 }
+  }
+  return { lines: [upper], fontSize: 19, startY: 7, lineHeight: 0 }
+}
+
 const showNotice = (message: string) => {
   notice.value = message
   if (noticeTimer.value) window.clearTimeout(noticeTimer.value)
@@ -407,7 +463,7 @@ onMounted(() => {
                 title="Añadir otro juego a la jornada"
               >
                 <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12m-6-6h12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
-                <span>+ Añadir encuentro</span>
+                <span>Añadir encuentro</span>
               </button>
             </div>
 
@@ -703,8 +759,23 @@ onMounted(() => {
                         clip-path="url(#crestClip2)"
                       />
                     </g>
-                    <text x="-32" y="-2" fill="#FFFFFF" font-size="24" font-weight="900" letter-spacing=".5">{{ getTeam(m.awayTeamId).name.toLocaleUpperCase('es-VE') }}</text>
-                    <text x="-32" y="22" :fill="selectedTheme.accentSoft" font-size="12" font-weight="700" letter-spacing="2">VISITANTE</text>
+                    <text
+                      x="-32"
+                      fill="#FFFFFF"
+                      :font-size="formatMultiName(getTeam(m.awayTeamId).name, 'two').fontSize"
+                      font-weight="900"
+                      letter-spacing=".5"
+                    >
+                      <tspan
+                        v-for="(line, lIdx) in formatMultiName(getTeam(m.awayTeamId).name, 'two').lines"
+                        :key="lIdx"
+                        x="-32"
+                        :y="formatMultiName(getTeam(m.awayTeamId).name, 'two').startY + lIdx * formatMultiName(getTeam(m.awayTeamId).name, 'two').lineHeight"
+                      >
+                        {{ line }}
+                      </tspan>
+                    </text>
+                    <text x="-32" :y="formatMultiName(getTeam(m.awayTeamId).name, 'two').labelY" :fill="selectedTheme.accentSoft" font-size="12" font-weight="700" letter-spacing="2">VISITANTE</text>
                   </g>
 
                   <!-- VS Center & Time below -->
@@ -717,8 +788,24 @@ onMounted(() => {
 
                   <!-- HOME TEAM (Right) -->
                   <g transform="translate(635 120)">
-                    <text x="140" y="-2" text-anchor="end" fill="#FFFFFF" font-size="24" font-weight="900" letter-spacing=".5">{{ getTeam(m.homeTeamId).name.toLocaleUpperCase('es-VE') }}</text>
-                    <text x="140" y="22" text-anchor="end" :fill="selectedTheme.accentSoft" font-size="12" font-weight="700" letter-spacing="2">LOCAL</text>
+                    <text
+                      x="140"
+                      text-anchor="end"
+                      fill="#FFFFFF"
+                      :font-size="formatMultiName(getTeam(m.homeTeamId).name, 'two').fontSize"
+                      font-weight="900"
+                      letter-spacing=".5"
+                    >
+                      <tspan
+                        v-for="(line, lIdx) in formatMultiName(getTeam(m.homeTeamId).name, 'two').lines"
+                        :key="lIdx"
+                        x="140"
+                        :y="formatMultiName(getTeam(m.homeTeamId).name, 'two').startY + lIdx * formatMultiName(getTeam(m.homeTeamId).name, 'two').lineHeight"
+                      >
+                        {{ line }}
+                      </tspan>
+                    </text>
+                    <text x="140" :y="formatMultiName(getTeam(m.homeTeamId).name, 'two').labelY" text-anchor="end" :fill="selectedTheme.accentSoft" font-size="12" font-weight="700" letter-spacing="2">LOCAL</text>
                     <g transform="translate(210 0)" filter="url(#logoShadow)">
                       <circle r="56" fill="#02080C" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="2" />
                       <circle r="50" :fill="getTeam(m.homeTeamId).primary" />
@@ -761,7 +848,22 @@ onMounted(() => {
                         clip-path="url(#crestClip3)"
                       />
                     </g>
-                    <text x="58" y="8" fill="#FFFFFF" font-size="22" font-weight="900" letter-spacing=".4">{{ getTeam(m.awayTeamId).name.toLocaleUpperCase('es-VE') }}</text>
+                    <text
+                      x="58"
+                      fill="#FFFFFF"
+                      :font-size="formatMultiName(getTeam(m.awayTeamId).name, 'three').fontSize"
+                      font-weight="900"
+                      letter-spacing=".4"
+                    >
+                      <tspan
+                        v-for="(line, lIdx) in formatMultiName(getTeam(m.awayTeamId).name, 'three').lines"
+                        :key="lIdx"
+                        x="58"
+                        :y="formatMultiName(getTeam(m.awayTeamId).name, 'three').startY + lIdx * formatMultiName(getTeam(m.awayTeamId).name, 'three').lineHeight"
+                      >
+                        {{ line }}
+                      </tspan>
+                    </text>
                   </g>
 
                   <!-- VS CENTER & TIME DIRECTLY BELOW -->
@@ -774,7 +876,23 @@ onMounted(() => {
 
                   <!-- HOME (Right) -->
                   <g transform="translate(868 78)">
-                    <text x="-58" y="8" text-anchor="end" fill="#FFFFFF" font-size="22" font-weight="900" letter-spacing=".4">{{ getTeam(m.homeTeamId).name.toLocaleUpperCase('es-VE') }}</text>
+                    <text
+                      x="-58"
+                      text-anchor="end"
+                      fill="#FFFFFF"
+                      :font-size="formatMultiName(getTeam(m.homeTeamId).name, 'three').fontSize"
+                      font-weight="900"
+                      letter-spacing=".4"
+                    >
+                      <tspan
+                        v-for="(line, lIdx) in formatMultiName(getTeam(m.homeTeamId).name, 'three').lines"
+                        :key="lIdx"
+                        x="-58"
+                        :y="formatMultiName(getTeam(m.homeTeamId).name, 'three').startY + lIdx * formatMultiName(getTeam(m.homeTeamId).name, 'three').lineHeight"
+                      >
+                        {{ line }}
+                      </tspan>
+                    </text>
                     <g filter="url(#logoShadow)">
                       <circle r="44" fill="#02080C" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
                       <circle r="39" :fill="getTeam(m.homeTeamId).primary" />
@@ -817,7 +935,22 @@ onMounted(() => {
                         clip-path="url(#crestClip4)"
                       />
                     </g>
-                    <text x="48" y="7" fill="#FFFFFF" font-size="19" font-weight="900" letter-spacing=".3">{{ getTeam(m.awayTeamId).name.toLocaleUpperCase('es-VE') }}</text>
+                    <text
+                      x="48"
+                      fill="#FFFFFF"
+                      :font-size="formatMultiName(getTeam(m.awayTeamId).name, 'four').fontSize"
+                      font-weight="900"
+                      letter-spacing=".3"
+                    >
+                      <tspan
+                        v-for="(line, lIdx) in formatMultiName(getTeam(m.awayTeamId).name, 'four').lines"
+                        :key="lIdx"
+                        x="48"
+                        :y="formatMultiName(getTeam(m.awayTeamId).name, 'four').startY + lIdx * formatMultiName(getTeam(m.awayTeamId).name, 'four').lineHeight"
+                      >
+                        {{ line }}
+                      </tspan>
+                    </text>
                   </g>
 
                   <!-- VS CENTER & TIME DIRECTLY BELOW -->
@@ -830,7 +963,23 @@ onMounted(() => {
 
                   <!-- HOME (Right) -->
                   <g transform="translate(868 57)">
-                    <text x="-48" y="7" text-anchor="end" fill="#FFFFFF" font-size="19" font-weight="900" letter-spacing=".3">{{ getTeam(m.homeTeamId).name.toLocaleUpperCase('es-VE') }}</text>
+                    <text
+                      x="-48"
+                      text-anchor="end"
+                      fill="#FFFFFF"
+                      :font-size="formatMultiName(getTeam(m.homeTeamId).name, 'four').fontSize"
+                      font-weight="900"
+                      letter-spacing=".3"
+                    >
+                      <tspan
+                        v-for="(line, lIdx) in formatMultiName(getTeam(m.homeTeamId).name, 'four').lines"
+                        :key="lIdx"
+                        x="-48"
+                        :y="formatMultiName(getTeam(m.homeTeamId).name, 'four').startY + lIdx * formatMultiName(getTeam(m.homeTeamId).name, 'four').lineHeight"
+                      >
+                        {{ line }}
+                      </tspan>
+                    </text>
                     <g filter="url(#logoShadow)">
                       <circle r="34" fill="#02080C" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
                       <circle r="30" :fill="getTeam(m.homeTeamId).primary" />
