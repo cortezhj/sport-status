@@ -12,9 +12,6 @@ dist
 dist-ssr
 *.local
 
-# Generated image variants
-src/assets/Logos/optimized/
-
 # Environment and coverage
 .env
 .env.*
