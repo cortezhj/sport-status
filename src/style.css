@@ -176,20 +176,6 @@ button:disabled { cursor: not-allowed; }
 .match-time-input-wrap input[type="time"]:focus {
   border-color: #c4772d;
 }
-.match-time-preview {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 7px;
-  border-radius: 6px;
-  background: #fdf6ec;
-  border: 1px solid #fae1c3;
-  color: #bf661d;
-  font-family: 'Bahnschrift Condensed', 'Arial Narrow', sans-serif;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: .4px;
-  white-space: nowrap;
-}
 .remove-match-btn {
   width: 32px;
   height: 32px;
