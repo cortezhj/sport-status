@@ -90,7 +90,7 @@ const teamDataUrls = reactive<Record<string, string>>({})
 const bgDataUrls = reactive<Record<string, string>>({})
 
 const matches = reactive<Match[]>([
-  { id: 'm1', awayTeamId: 'cristo-el-salvador', homeTeamId: 'dios-es-bueno', time: '14:00' },
+  { id: 'm1', awayTeamId: 'cristo-el-salvador', homeTeamId: 'dios-es-bueno', time: '12:00' },
 ])
 
 const gameDate = ref(nextSaturday())
@@ -299,8 +299,8 @@ const addMatch = () => {
     showNotice('Máximo 4 encuentros por cartel diario.')
     return
   }
-  const defaultTimes = ['14:00', '15:30', '17:00', '18:30']
-  const nextTime = defaultTimes[matches.length] || '14:00'
+  const defaultTimes = ['12:00', '14:00', '16:00', '18:00']
+  const nextTime = defaultTimes[matches.length] || '16:00'
   const usedTeams = new Set(matches.flatMap((m) => [m.awayTeamId, m.homeTeamId]))
   const available = teams.filter((t) => !usedTeams.has(t.id))
   const awayId = available[0]?.id || teams[(matches.length * 2) % teams.length].id
