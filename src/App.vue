@@ -29,6 +29,13 @@ interface Team {
   logo: string
 }
 
+interface Match {
+  id: string
+  awayTeamId: string
+  homeTeamId: string
+  time: string
+}
+
 interface PosterTheme {
   id: string
   name: string
@@ -82,28 +89,38 @@ const leagueLogoDataUrl = ref('')
 const teamDataUrls = reactive<Record<string, string>>({})
 const bgDataUrls = reactive<Record<string, string>>({})
 
-const awayTeamId = ref('cristo-el-salvador')
-const homeTeamId = ref('dios-es-bueno')
+const matches = reactive<Match[]>([
+  { id: 'm1', awayTeamId: 'cristo-el-salvador', homeTeamId: 'dios-es-bueno', time: '19:00' },
+])
+
 const gameDate = ref(nextSaturday())
-const gameTime = ref('19:00')
 const venue = ref('Estadio Felipe Rivas')
 const eyebrow = ref('TEMPORADA REGULAR')
+const posterTitle = ref('')
 const selectedThemeId = ref('lights')
 const selectedBgId = ref('night')
 const isExporting = ref(false)
 const notice = ref('')
 const noticeTimer = ref<number | undefined>()
 
-const awayTeam = computed(() => teams.find((team) => team.id === awayTeamId.value) ?? teams[0])
-const homeTeam = computed(() => teams.find((team) => team.id === homeTeamId.value) ?? teams[1])
+const getTeam = (id: string): Team => {
+  return teams.find((team) => team.id === id) ?? teams[0]
+}
+
 const selectedTheme = computed(() => themes.find((theme) => theme.id === selectedThemeId.value) ?? themes[0])
 const currentBg = computed(() => backgrounds.find((b) => b.id === selectedBgId.value) ?? backgrounds[0])
-const hasTeamConflict = computed(() => awayTeamId.value === homeTeamId.value)
-const isFormComplete = computed(() => Boolean(gameDate.value && gameTime.value && venue.value.trim() && !hasTeamConflict.value))
 
-const posterTeams = computed(() => [
-  { slot: 'away' as TeamSlot, label: 'VISITANTE', x: 282, team: awayTeam.value },
-  { slot: 'home' as TeamSlot, label: 'LOCAL', x: 798, team: homeTeam.value },
+const hasAnyConflict = computed(() => {
+  return matches.some((m) => m.awayTeamId === m.homeTeamId)
+})
+
+const isFormComplete = computed(() => {
+  return Boolean(gameDate.value && venue.value.trim() && !hasAnyConflict.value && matches.length > 0)
+})
+
+const posterTeamsSingle = computed(() => [
+  { slot: 'away' as TeamSlot, label: 'VISITANTE', x: 282, team: getTeam(matches[0].awayTeamId) },
+  { slot: 'home' as TeamSlot, label: 'LOCAL', x: 798, team: getTeam(matches[0].homeTeamId) },
 ])
 
 const formattedDate = computed(() => {
@@ -117,13 +134,13 @@ const formattedDate = computed(() => {
 
 const gameYear = computed(() => gameDate.value ? new Date(`${gameDate.value}T12:00:00`).getFullYear() : new Date().getFullYear())
 
-const formattedTime = computed(() => {
-  if (!gameTime.value) return '--:--'
-  const [hourValue, minutes = '00'] = gameTime.value.split(':')
+const formatTime = (timeStr: string) => {
+  if (!timeStr) return '--:--'
+  const [hourValue, minutes = '00'] = timeStr.split(':')
   const hour = Number(hourValue)
   const suffix = hour >= 12 ? 'PM' : 'AM'
   return `${`${hour % 12 || 12}`.padStart(2, '0')}:${minutes} ${suffix}`
-})
+}
 
 const venueDisplay = computed(() => venue.value.trim().toLocaleUpperCase('es-VE') || 'SEDE POR CONFIRMAR')
 const venueLines = computed(() => {
@@ -140,6 +157,10 @@ const venueLines = computed(() => {
 })
 const venueFontSize = computed(() => venueLines.value.length > 1 ? 23 : venueDisplay.value.length > 32 ? 25 : venueDisplay.value.length > 24 ? 29 : 34)
 const eyebrowDisplay = computed(() => eyebrow.value.trim().toLocaleUpperCase('es-VE').slice(0, 28) || 'TEMPORADA REGULAR')
+const computedPosterTitle = computed(() => {
+  if (posterTitle.value.trim()) return posterTitle.value.trim().toLocaleUpperCase('es-VE')
+  return matches.length > 1 ? 'CARTELERA DE JUEGOS' : 'PRÓXIMO JUEGO'
+})
 
 // Format team name dynamically for best typography in the SVG poster
 const formatTeamName = (name: string) => {
@@ -209,16 +230,102 @@ const formatTeamName = (name: string) => {
   }
 }
 
+const formatMultiName = (name: string, layout: 'two' | 'three' | 'four') => {
+  const upper = name.toLocaleUpperCase('es-VE').trim()
+  if (layout === 'two') {
+    if (upper === 'FRATERNIDAD CRISTIANA') {
+      return { lines: ['FRATERNIDAD', 'CRISTIANA'], fontSize: 20, startY: -10, lineHeight: 22, labelY: 34 }
+    }
+    if (upper === 'CRISTO EL SALVADOR') {
+      return { lines: ['CRISTO EL', 'SALVADOR'], fontSize: 21, startY: -10, lineHeight: 22, labelY: 34 }
+    }
+    if (upper === 'DIOS ES BUENO') {
+      return { lines: ['DIOS ES', 'BUENO'], fontSize: 22, startY: -10, lineHeight: 23, labelY: 34 }
+    }
+    if (upper.length > 12) {
+      const words = upper.split(' ')
+      const mid = Math.ceil(words.length / 2)
+      return { lines: [words.slice(0, mid).join(' '), words.slice(mid).join(' ')], fontSize: 20, startY: -10, lineHeight: 22, labelY: 34 }
+    }
+    return { lines: [upper], fontSize: 24, startY: 0, lineHeight: 0, labelY: 23 }
+  }
+
+  if (layout === 'three') {
+    if (upper === 'FRATERNIDAD CRISTIANA') {
+      return { lines: ['FRATERNIDAD', 'CRISTIANA'], fontSize: 20, startY: -3, lineHeight: 22 }
+    }
+    if (upper === 'CRISTO EL SALVADOR') {
+      return { lines: ['CRISTO EL', 'SALVADOR'], fontSize: 21, startY: -3, lineHeight: 22 }
+    }
+    if (upper === 'DIOS ES BUENO') {
+      return { lines: ['DIOS ES', 'BUENO'], fontSize: 22, startY: -3, lineHeight: 23 }
+    }
+    if (upper.length > 12) {
+      const words = upper.split(' ')
+      const mid = Math.ceil(words.length / 2)
+      return { lines: [words.slice(0, mid).join(' '), words.slice(mid).join(' ')], fontSize: 20, startY: -3, lineHeight: 22 }
+    }
+    return { lines: [upper], fontSize: 26, startY: 8, lineHeight: 0 }
+  }
+
+  // layout === 'four'
+  if (upper === 'FRATERNIDAD CRISTIANA') {
+    return { lines: ['FRATERNIDAD', 'CRISTIANA'], fontSize: 17, startY: -3, lineHeight: 18 }
+  }
+  if (upper === 'CRISTO EL SALVADOR') {
+    return { lines: ['CRISTO EL', 'SALVADOR'], fontSize: 18, startY: -3, lineHeight: 19 }
+  }
+  if (upper === 'DIOS ES BUENO') {
+    return { lines: ['DIOS ES', 'BUENO'], fontSize: 19, startY: -3, lineHeight: 20 }
+  }
+  if (upper.length > 12) {
+    const words = upper.split(' ')
+    const mid = Math.ceil(words.length / 2)
+    return { lines: [words.slice(0, mid).join(' '), words.slice(mid).join(' ')], fontSize: 17, startY: -3, lineHeight: 18 }
+  }
+  return { lines: [upper], fontSize: 22, startY: 8, lineHeight: 0 }
+}
+
 const showNotice = (message: string) => {
   notice.value = message
   if (noticeTimer.value) window.clearTimeout(noticeTimer.value)
   noticeTimer.value = window.setTimeout(() => { notice.value = '' }, 3200)
 }
 
-const swapTeams = () => {
-  const previousAway = awayTeamId.value
-  awayTeamId.value = homeTeamId.value
-  homeTeamId.value = previousAway
+const addMatch = () => {
+  if (matches.length >= 4) {
+    showNotice('Máximo 4 encuentros por cartel diario.')
+    return
+  }
+  const defaultTimes = ['09:00', '11:30', '14:00', '16:30']
+  const nextTime = defaultTimes[matches.length] || '14:00'
+  const usedTeams = new Set(matches.flatMap((m) => [m.awayTeamId, m.homeTeamId]))
+  const available = teams.filter((t) => !usedTeams.has(t.id))
+  const awayId = available[0]?.id || teams[(matches.length * 2) % teams.length].id
+  const homeId = available[1]?.id || teams[(matches.length * 2 + 1) % teams.length].id
+
+  matches.push({
+    id: `m_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+    awayTeamId: awayId,
+    homeTeamId: homeId,
+    time: nextTime,
+  })
+  showNotice(`Encuentro #${matches.length} añadido.`)
+}
+
+const removeMatch = (index: number) => {
+  if (matches.length <= 1) {
+    showNotice('Debe haber al menos un encuentro.')
+    return
+  }
+  matches.splice(index, 1)
+  showNotice('Encuentro eliminado.')
+}
+
+const swapTeams = (match: Match) => {
+  const previousAway = match.awayTeamId
+  match.awayTeamId = match.homeTeamId
+  match.homeTeamId = previousAway
 }
 
 const urlToDataUrl = async (url: string): Promise<string> => {
@@ -260,7 +367,7 @@ const preloadAssets = async () => {
 
 const downloadPoster = async () => {
   if (!isFormComplete.value || !posterSvg.value) {
-    showNotice(hasTeamConflict.value ? 'Elige dos equipos diferentes.' : 'Completa los datos del juego.')
+    showNotice(hasAnyConflict.value ? 'Elige equipos diferentes en cada juego.' : 'Completa los datos del juego.')
     return
   }
   isExporting.value = true
@@ -296,7 +403,8 @@ const downloadPoster = async () => {
     const pngUrl = URL.createObjectURL(pngBlob)
     const link = document.createElement('a')
     link.href = pngUrl
-    link.download = `${awayTeam.value.name}-vs-${homeTeam.value.name}.png`
+    const matchSuffix = matches.length === 1 ? `${getTeam(matches[0].awayTeamId).name}-vs-${getTeam(matches[0].homeTeamId).name}` : `jornada-${matches.length}-juegos`
+    link.download = `softball-liga-cristiana-${matchSuffix}.png`
     document.body.appendChild(link)
     link.click()
     link.remove()
@@ -337,44 +445,131 @@ onMounted(() => {
         </div>
 
         <form class="match-form" @submit.prevent="downloadPoster">
-          <!-- SECTION 01: TEAMS -->
+          <!-- SECTION 01: ENCOUNTERS -->
           <section class="form-section">
-            <div class="section-heading"><span>01</span><div><h2>El enfrentamiento</h2><p>Selecciona visitante y local</p></div></div>
-            <div class="teams-control">
-              <!-- AWAY TEAM -->
-              <div class="team-field">
-                <label for="away-team">Visitante</label>
-                <div class="team-select-wrap">
-                  <span class="mini-crest" :style="{ '--team-color': awayTeam.primary, '--team-accent': awayTeam.secondary }" aria-hidden="true">
-                    <img :src="teamDataUrls[awayTeam.id] || awayTeam.logo" :alt="awayTeam.name" />
-                  </span>
-                  <select id="away-team" v-model="awayTeamId">
-                    <option v-for="team in teams" :key="team.id" :value="team.id" :disabled="team.id === homeTeamId">{{ team.fullName }}</option>
-                  </select>
-                  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
+            <div class="section-heading-row">
+              <div class="section-heading">
+                <span>01</span>
+                <div>
+                  <h2>{{ matches.length === 1 ? 'El enfrentamiento' : 'Los enfrentamientos' }}</h2>
+                  <p>{{ matches.length === 1 ? 'Selecciona visitante y local' : `${matches.length} juegos programados (máx. 4)` }}</p>
                 </div>
               </div>
-
-              <!-- SWAP BUTTON -->
-              <button class="swap-button" type="button" aria-label="Intercambiar equipos" title="Intercambiar equipos" @click="swapTeams">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11m0 0-3-3m3 3-3 3M17 17H6m0 0 3 3m-3-3 3-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              <button
+                v-if="matches.length < 4"
+                type="button"
+                class="add-match-btn"
+                @click="addMatch"
+                title="Añadir otro juego a la jornada"
+              >
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12m-6-6h12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
+                <span>Añadir encuentro</span>
               </button>
+            </div>
 
-              <!-- HOME TEAM -->
-              <div class="team-field">
-                <label for="home-team">Local</label>
-                <div class="team-select-wrap">
-                  <span class="mini-crest" :style="{ '--team-color': homeTeam.primary, '--team-accent': homeTeam.secondary }" aria-hidden="true">
-                    <img :src="teamDataUrls[homeTeam.id] || homeTeam.logo" :alt="homeTeam.name" />
-                  </span>
-                  <select id="home-team" v-model="homeTeamId">
-                    <option v-for="team in teams" :key="team.id" :value="team.id" :disabled="team.id === awayTeamId">{{ team.fullName }}</option>
-                  </select>
-                  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
+            <!-- SINGLE MATCH (CLEAN & MINIMALIST) -->
+            <template v-if="matches.length === 1">
+              <div class="teams-control">
+                <!-- AWAY TEAM -->
+                <div class="team-field">
+                  <label for="away-team-0">Visitante</label>
+                  <div class="team-select-wrap">
+                    <span class="mini-crest" :style="{ '--team-color': getTeam(matches[0].awayTeamId).primary, '--team-accent': getTeam(matches[0].awayTeamId).secondary }" aria-hidden="true">
+                      <img :src="teamDataUrls[matches[0].awayTeamId] || getTeam(matches[0].awayTeamId).logo" :alt="getTeam(matches[0].awayTeamId).name" />
+                    </span>
+                    <select id="away-team-0" v-model="matches[0].awayTeamId">
+                      <option v-for="team in teams" :key="team.id" :value="team.id" :disabled="team.id === matches[0].homeTeamId">{{ team.fullName }}</option>
+                    </select>
+                    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
+                  </div>
+                </div>
+
+                <!-- SWAP BUTTON -->
+                <button class="swap-button" type="button" aria-label="Intercambiar equipos" title="Intercambiar equipos" @click="swapTeams(matches[0])">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11m0 0-3-3m3 3-3 3M17 17H6m0 0 3 3m-3-3 3-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                </button>
+
+                <!-- HOME TEAM -->
+                <div class="team-field">
+                  <label for="home-team-0">Local</label>
+                  <div class="team-select-wrap">
+                    <span class="mini-crest" :style="{ '--team-color': getTeam(matches[0].homeTeamId).primary, '--team-accent': getTeam(matches[0].homeTeamId).secondary }" aria-hidden="true">
+                      <img :src="teamDataUrls[matches[0].homeTeamId] || getTeam(matches[0].homeTeamId).logo" :alt="getTeam(matches[0].homeTeamId).name" />
+                    </span>
+                    <select id="home-team-0" v-model="matches[0].homeTeamId">
+                      <option v-for="team in teams" :key="team.id" :value="team.id" :disabled="team.id === matches[0].awayTeamId">{{ team.fullName }}</option>
+                    </select>
+                    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
+                  </div>
                 </div>
               </div>
-            </div>
-            <p v-if="hasTeamConflict" class="field-error">Elige dos equipos diferentes.</p>
+              <p v-if="matches[0].awayTeamId === matches[0].homeTeamId" class="field-error">Elige dos equipos diferentes.</p>
+            </template>
+
+            <!-- MULTIPLE MATCHES (STACK OF CLEAN CARDS) -->
+            <template v-else>
+              <div class="matches-stack">
+                <div v-for="(match, mIdx) in matches" :key="match.id" class="match-card-box">
+                  <div class="match-box-top">
+                    <div class="match-box-top-left">
+                      <span class="match-badge-tag">Juego {{ mIdx + 1 }}</span>
+                      <label class="match-time-input-wrap">
+                        <span>Hora:</span>
+                        <input v-model="match.time" type="time" required />
+                      </label>
+                    </div>
+                    <button
+                      type="button"
+                      class="remove-match-btn"
+                      @click="removeMatch(mIdx)"
+                      title="Eliminar este juego"
+                      aria-label="Eliminar este juego"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div class="teams-control">
+                    <!-- AWAY TEAM -->
+                    <div class="team-field">
+                      <label :for="`away-team-${mIdx}`">Visitante</label>
+                      <div class="team-select-wrap">
+                        <span class="mini-crest" :style="{ '--team-color': getTeam(match.awayTeamId).primary, '--team-accent': getTeam(match.awayTeamId).secondary }" aria-hidden="true">
+                          <img :src="teamDataUrls[match.awayTeamId] || getTeam(match.awayTeamId).logo" :alt="getTeam(match.awayTeamId).name" />
+                        </span>
+                        <select :id="`away-team-${mIdx}`" v-model="match.awayTeamId">
+                          <option v-for="team in teams" :key="team.id" :value="team.id" :disabled="team.id === match.homeTeamId">{{ team.fullName }}</option>
+                        </select>
+                        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
+                      </div>
+                    </div>
+
+                    <!-- SWAP BUTTON -->
+                    <button class="swap-button" type="button" aria-label="Intercambiar equipos" title="Intercambiar equipos" @click="swapTeams(match)">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11m0 0-3-3m3 3-3 3M17 17H6m0 0 3 3m-3-3 3-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                    </button>
+
+                    <!-- HOME TEAM -->
+                    <div class="team-field">
+                      <label :for="`home-team-${mIdx}`">Local</label>
+                      <div class="team-select-wrap">
+                        <span class="mini-crest" :style="{ '--team-color': getTeam(match.homeTeamId).primary, '--team-accent': getTeam(match.homeTeamId).secondary }" aria-hidden="true">
+                          <img :src="teamDataUrls[match.homeTeamId] || getTeam(match.homeTeamId).logo" :alt="getTeam(match.homeTeamId).name" />
+                        </span>
+                        <select :id="`home-team-${mIdx}`" v-model="match.homeTeamId">
+                          <option v-for="team in teams" :key="team.id" :value="team.id" :disabled="team.id === match.awayTeamId">{{ team.fullName }}</option>
+                        </select>
+                        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" /></svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p v-if="match.awayTeamId === match.homeTeamId" class="field-error">Elige dos equipos diferentes para este juego.</p>
+                </div>
+              </div>
+            </template>
           </section>
 
           <!-- SECTION 02: GAME DETAILS -->
@@ -382,8 +577,8 @@ onMounted(() => {
             <div class="section-heading"><span>02</span><div><h2>Datos del juego</h2><p>Define cuándo y dónde</p></div></div>
             <div class="field-grid">
               <label class="input-field"><span>Fecha</span><span class="input-shell"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3v3m10-3v3M3.5 8h13M4 5h12a1 1 0 0 1 1 1v10H3V6a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg><input v-model="gameDate" type="date" required /></span></label>
-              <label class="input-field"><span>Hora</span><span class="input-shell"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="M10 6v4l2.8 1.7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg><input v-model="gameTime" type="time" required /></span></label>
-              <label class="input-field field-wide"><span>Estadio</span><span class="input-shell"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 17s5-4.6 5-9a5 5 0 1 0-10 0c0 4.4 5 9 5 9Z" fill="none" stroke="currentColor" stroke-width="1.5" /><circle cx="10" cy="8" r="1.8" fill="none" stroke="currentColor" stroke-width="1.5" /></svg><input v-model="venue" list="venues" maxlength="54" placeholder="Nombre del estadio" required /></span></label>
+              <label v-if="matches.length === 1" class="input-field"><span>Hora</span><span class="input-shell"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="M10 6v4l2.8 1.7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg><input v-model="matches[0].time" type="time" required /></span></label>
+              <label class="input-field" :class="{ 'field-wide': matches.length > 1 }"><span>Estadio</span><span class="input-shell"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 17s5-4.6 5-9a5 5 0 1 0-10 0c0 4.4 5 9 5 9Z" fill="none" stroke="currentColor" stroke-width="1.5" /><circle cx="10" cy="8" r="1.8" fill="none" stroke="currentColor" stroke-width="1.5" /></svg><input v-model="venue" list="venues" maxlength="54" placeholder="Nombre del estadio" required /></span></label>
               <datalist id="venues"><option value="Estadio Felipe Rivas" /><option value="Campo Deportivo Principal" /><option value="Estadio Municipal" /></datalist>
               <label class="input-field field-wide"><span>Etiqueta <small>Opcional</small></span><span class="input-shell"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 4h8l4 4-8 8-4-4V4Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" /><circle cx="8" cy="8" r="1.2" fill="currentColor" /></svg><input v-model="eyebrow" maxlength="28" placeholder="Temporada regular" /></span></label>
             </div>
@@ -430,7 +625,7 @@ onMounted(() => {
         <div class="preview-toolbar"><div><span class="live-dot"></span><div><h2 id="preview-title">Vista previa</h2><p>Se actualiza en tiempo real</p></div></div><span class="format-pill">PUBLICACIÓN · 1:1</span></div>
         <div class="poster-stage">
           <div class="poster-shadow" aria-hidden="true"></div>
-          <svg ref="posterSvg" class="poster" viewBox="0 0 1080 1080" role="img" :aria-label="`${awayTeam.fullName} versus ${homeTeam.fullName}, ${formattedDate}, ${formattedTime}, ${venueDisplay}`" xmlns="http://www.w3.org/2000/svg">
+          <svg ref="posterSvg" class="poster" viewBox="0 0 1080 1080" role="img" :aria-label="`Cartel de softball, ${formattedDate}, ${venueDisplay}`" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <linearGradient id="posterShade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" :stop-color="selectedTheme.ink" stop-opacity=".76" /><stop offset=".48" stop-color="#07131D" stop-opacity=".68" /><stop offset="1" stop-color="#03090D" stop-opacity=".97" /></linearGradient>
               <linearGradient id="cardFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#10232C" stop-opacity=".89" /><stop offset="1" stop-color="#071219" stop-opacity=".94" /></linearGradient>
@@ -440,7 +635,11 @@ onMounted(() => {
               <filter id="softShadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000000" flood-opacity=".42" /></filter>
               <filter id="logoShadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#000000" flood-opacity=".5" /></filter>
               <clipPath id="leagueLogoClip"><rect x="0" y="0" width="44" height="44" rx="10" ry="10" /></clipPath>
-              <clipPath id="logo-away"><circle cx="0" cy="0" r="91" /></clipPath><clipPath id="logo-home"><circle cx="0" cy="0" r="91" /></clipPath>
+              <clipPath id="logo-away"><circle cx="0" cy="0" r="91" /></clipPath>
+              <clipPath id="logo-home"><circle cx="0" cy="0" r="91" /></clipPath>
+              <clipPath id="crestClip2"><circle cx="0" cy="0" r="50" /></clipPath>
+              <clipPath id="crestClip3"><circle cx="0" cy="0" r="38" /></clipPath>
+              <clipPath id="crestClip4"><circle cx="0" cy="0" r="30" /></clipPath>
             </defs>
 
             <!-- Background Image and overlays -->
@@ -470,69 +669,348 @@ onMounted(() => {
               <g transform="translate(1008 61)" text-anchor="end"><text y="15" fill="#FFFFFF" fill-opacity=".54" font-size="11" font-weight="700" letter-spacing="2.5">JORNADA DE JUEGO</text><text y="38" fill="#FFFFFF" font-size="18" font-weight="800" letter-spacing="2">{{ gameYear }}</text></g>
               <path d="M72 122H1008" stroke="#FFFFFF" stroke-opacity=".17" /><path d="M72 122H245" :stroke="selectedTheme.accent" stroke-width="3" />
               <text x="540" y="174" text-anchor="middle" :fill="selectedTheme.accentSoft" font-size="15" font-weight="800" letter-spacing="6.2">{{ eyebrowDisplay }}</text>
-              <text x="540" y="229" text-anchor="middle" fill="#FFFFFF" font-size="53" font-weight="900" letter-spacing="5">PRÓXIMO JUEGO</text>
+              <text x="540" y="229" text-anchor="middle" fill="#FFFFFF" font-size="53" font-weight="900" letter-spacing="5">{{ computedPosterTitle }}</text>
               <text x="540" y="267" text-anchor="middle" fill="#FFFFFF" fill-opacity=".68" font-size="17" font-weight="700" letter-spacing="2.7">{{ formattedDate }}</text>
 
-              <g filter="url(#softShadow)"><rect x="72" y="302" width="936" height="496" rx="26" fill="url(#cardFill)" stroke="#FFFFFF" stroke-opacity=".15" /><path d="M72 363H1008" stroke="#FFFFFF" stroke-opacity=".12" /><path d="M540 363V770" stroke="#FFFFFF" stroke-opacity=".07" /><path d="M72 302H1008" :stroke="selectedTheme.accent" stroke-width="3" opacity=".9" /></g>
+              <!-- ============================================== -->
+              <!-- LAYOUT 1: SINGLE MATCH (DETAILED CHAMPIONSHIP) -->
+              <!-- ============================================== -->
+              <template v-if="matches.length === 1">
+                <g filter="url(#softShadow)"><rect x="72" y="302" width="936" height="496" rx="26" fill="url(#cardFill)" stroke="#FFFFFF" stroke-opacity=".15" /><path d="M72 363H1008" stroke="#FFFFFF" stroke-opacity=".12" /><path d="M540 363V770" stroke="#FFFFFF" stroke-opacity=".07" /><path d="M72 302H1008" :stroke="selectedTheme.accent" stroke-width="3" opacity=".9" /></g>
 
-              <!-- TEAMS SHOWCASE -->
-              <g v-for="item in posterTeams" :key="item.slot" :transform="`translate(${item.x} 0)`">
-                <text x="0" y="341" text-anchor="middle" fill="#FFFFFF" fill-opacity=".48" font-size="13" font-weight="800" letter-spacing="4.5">{{ item.label }}</text>
-                
-                <!-- CREST WITH EMBEDDED TEAM LOGO -->
-                <g transform="translate(0 488)" filter="url(#logoShadow)">
-                  <circle r="105" fill="#02080C" fill-opacity=".85" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="2" />
-                  <circle r="95" :fill="item.team.primary" />
-                  <circle r="88" fill="#FFFFFF" fill-opacity=".08" />
-                  <image
-                    :href="teamDataUrls[item.team.id] || item.team.logo"
-                    x="-76"
-                    y="-76"
-                    width="152"
-                    height="152"
-                    preserveAspectRatio="xMidYMid meet"
-                    :clip-path="`url(#logo-${item.slot})`"
-                  />
+                <!-- TEAMS SHOWCASE -->
+                <g v-for="item in posterTeamsSingle" :key="item.slot" :transform="`translate(${item.x} 0)`">
+                  <text x="0" y="341" text-anchor="middle" fill="#FFFFFF" fill-opacity=".48" font-size="13" font-weight="800" letter-spacing="4.5">{{ item.label }}</text>
+                  
+                  <!-- CREST WITH EMBEDDED TEAM LOGO -->
+                  <g transform="translate(0 488)" filter="url(#logoShadow)">
+                    <circle r="105" fill="#02080C" fill-opacity=".85" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="2" />
+                    <circle r="95" :fill="item.team.primary" />
+                    <circle r="88" fill="#FFFFFF" fill-opacity=".08" />
+                    <image
+                      :href="teamDataUrls[item.team.id] || item.team.logo"
+                      x="-76"
+                      y="-76"
+                      width="152"
+                      height="152"
+                      preserveAspectRatio="xMidYMid meet"
+                      :clip-path="`url(#logo-${item.slot})`"
+                    />
+                  </g>
+
+                  <!-- OPTIMIZED TEAM NAME -->
+                  <text
+                    x="0"
+                    text-anchor="middle"
+                    fill="#FFFFFF"
+                    :font-size="formatTeamName(item.team.name).fontSize"
+                    font-weight="900"
+                    letter-spacing="1"
+                  >
+                    <tspan
+                      v-for="(line, lIdx) in formatTeamName(item.team.name).lines"
+                      :key="lIdx"
+                      x="0"
+                      :y="formatTeamName(item.team.name).startY + lIdx * formatTeamName(item.team.name).lineHeight"
+                    >
+                      {{ line }}
+                    </tspan>
+                  </text>
+
+                  <!-- SUBTITLE CITY / LEAGUE -->
+                  <text
+                    x="0"
+                    :y="formatTeamName(item.team.name).cityY"
+                    text-anchor="middle"
+                    :fill="selectedTheme.accentSoft"
+                    font-size="14"
+                    font-weight="700"
+                    letter-spacing="4.5"
+                  >
+                    {{ item.team.city.toLocaleUpperCase('es-VE') }}
+                  </text>
                 </g>
 
-                <!-- OPTIMIZED TEAM NAME (1 OR 2 LINES BASED ON LENGTH) -->
-                <text
-                  x="0"
-                  text-anchor="middle"
-                  fill="#FFFFFF"
-                  :font-size="formatTeamName(item.team.name).fontSize"
-                  font-weight="900"
-                  letter-spacing="1"
-                >
-                  <tspan
-                    v-for="(line, lIdx) in formatTeamName(item.team.name).lines"
-                    :key="lIdx"
-                    x="0"
-                    :y="formatTeamName(item.team.name).startY + lIdx * formatTeamName(item.team.name).lineHeight"
-                  >
-                    {{ line }}
-                  </tspan>
-                </text>
+                <g transform="translate(540 500)"><circle r="53" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="2" /><circle r="43" :fill="selectedTheme.accent" /><path d="M-29-24Q0-4 29-24M-29 24Q0 4 29 24" fill="none" stroke="#07131D" stroke-opacity=".45" stroke-width="2.5" /><text y="7" text-anchor="middle" dominant-baseline="middle" fill="#07131D" font-size="27" font-weight="900" letter-spacing="-1">VS</text></g>
+              </template>
 
-                <!-- SUBTITLE CITY / LEAGUE -->
-                <text
-                  x="0"
-                  :y="formatTeamName(item.team.name).cityY"
-                  text-anchor="middle"
-                  :fill="selectedTheme.accentSoft"
-                  font-size="14"
-                  font-weight="700"
-                  letter-spacing="4.5"
-                >
-                  {{ item.team.city.toLocaleUpperCase('es-VE') }}
-                </text>
-              </g>
+              <!-- ============================================== -->
+              <!-- LAYOUT 2: TWO MATCHES                          -->
+              <!-- ============================================== -->
+              <template v-else-if="matches.length === 2">
+                <g v-for="(m, mIdx) in matches" :key="m.id" :transform="`translate(72 ${300 + mIdx * 256})`">
+                  <g filter="url(#softShadow)">
+                    <rect width="936" height="240" rx="22" fill="url(#cardFill)" stroke="#FFFFFF" stroke-opacity=".15" />
+                    <rect width="6" height="240" rx="3" :fill="selectedTheme.accent" />
+                  </g>
 
-              <g transform="translate(540 500)"><circle r="53" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="2" /><circle r="43" :fill="selectedTheme.accent" /><path d="M-29-24Q0-4 29-24M-29 24Q0 4 29 24" fill="none" stroke="#07131D" stroke-opacity=".45" stroke-width="2.5" /><text y="7" text-anchor="middle" dominant-baseline="middle" fill="#07131D" font-size="27" font-weight="900" letter-spacing="-1">VS</text></g>
+                  <!-- AWAY TEAM (Left) -->
+                  <g transform="translate(195 120)">
+                    <g transform="translate(-105 0)" filter="url(#logoShadow)">
+                      <circle r="56" fill="#02080C" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="2" />
+                      <circle r="50" :fill="getTeam(m.awayTeamId).primary" />
+                      <image
+                        :href="teamDataUrls[m.awayTeamId] || getTeam(m.awayTeamId).logo"
+                        x="-40"
+                        y="-40"
+                        width="80"
+                        height="80"
+                        preserveAspectRatio="xMidYMid meet"
+                        clip-path="url(#crestClip2)"
+                      />
+                    </g>
+                    <text
+                      x="-32"
+                      fill="#FFFFFF"
+                      :font-size="formatMultiName(getTeam(m.awayTeamId).name, 'two').fontSize"
+                      font-weight="900"
+                      letter-spacing=".5"
+                    >
+                      <tspan
+                        v-for="(line, lIdx) in formatMultiName(getTeam(m.awayTeamId).name, 'two').lines"
+                        :key="lIdx"
+                        x="-32"
+                        :y="formatMultiName(getTeam(m.awayTeamId).name, 'two').startY + lIdx * formatMultiName(getTeam(m.awayTeamId).name, 'two').lineHeight"
+                      >
+                        {{ line }}
+                      </tspan>
+                    </text>
+                    <text x="-32" :y="formatMultiName(getTeam(m.awayTeamId).name, 'two').labelY" :fill="selectedTheme.accentSoft" font-size="12" font-weight="700" letter-spacing="2">VISITANTE</text>
+                  </g>
 
+                  <!-- VS Center & Time below -->
+                  <g transform="translate(468 96)">
+                    <circle r="38" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="2" />
+                    <circle r="30" :fill="selectedTheme.accent" />
+                    <text y="5" text-anchor="middle" dominant-baseline="middle" fill="#07131D" font-size="18" font-weight="900">VS</text>
+                    <text y="68" text-anchor="middle" fill="#FFFFFF" fill-opacity=".92" font-size="18" font-weight="900" letter-spacing=".5">{{ formatTime(m.time) }}</text>
+                  </g>
+
+                  <!-- HOME TEAM (Right) -->
+                  <g transform="translate(635 120)">
+                    <text
+                      x="140"
+                      text-anchor="end"
+                      fill="#FFFFFF"
+                      :font-size="formatMultiName(getTeam(m.homeTeamId).name, 'two').fontSize"
+                      font-weight="900"
+                      letter-spacing=".5"
+                    >
+                      <tspan
+                        v-for="(line, lIdx) in formatMultiName(getTeam(m.homeTeamId).name, 'two').lines"
+                        :key="lIdx"
+                        x="140"
+                        :y="formatMultiName(getTeam(m.homeTeamId).name, 'two').startY + lIdx * formatMultiName(getTeam(m.homeTeamId).name, 'two').lineHeight"
+                      >
+                        {{ line }}
+                      </tspan>
+                    </text>
+                    <text x="140" :y="formatMultiName(getTeam(m.homeTeamId).name, 'two').labelY" text-anchor="end" :fill="selectedTheme.accentSoft" font-size="12" font-weight="700" letter-spacing="2">LOCAL</text>
+                    <g transform="translate(210 0)" filter="url(#logoShadow)">
+                      <circle r="56" fill="#02080C" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="2" />
+                      <circle r="50" :fill="getTeam(m.homeTeamId).primary" />
+                      <image
+                        :href="teamDataUrls[m.homeTeamId] || getTeam(m.homeTeamId).logo"
+                        x="-40"
+                        y="-40"
+                        width="80"
+                        height="80"
+                        preserveAspectRatio="xMidYMid meet"
+                        clip-path="url(#crestClip2)"
+                      />
+                    </g>
+                  </g>
+                </g>
+              </template>
+
+              <!-- ============================================== -->
+              <!-- LAYOUT 3: THREE MATCHES                        -->
+              <!-- ============================================== -->
+              <template v-else-if="matches.length === 3">
+                <g v-for="(m, mIdx) in matches" :key="m.id" :transform="`translate(72 ${300 + mIdx * 172})`">
+                  <g filter="url(#softShadow)">
+                    <rect width="936" height="156" rx="18" fill="url(#cardFill)" stroke="#FFFFFF" stroke-opacity=".15" />
+                    <rect width="5" height="156" rx="2.5" :fill="selectedTheme.accent" />
+                  </g>
+
+                  <!-- AWAY (Left) -->
+                  <g transform="translate(68 78)">
+                    <g filter="url(#logoShadow)">
+                      <circle r="44" fill="#02080C" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
+                      <circle r="39" :fill="getTeam(m.awayTeamId).primary" />
+                      <image
+                        :href="teamDataUrls[m.awayTeamId] || getTeam(m.awayTeamId).logo"
+                        x="-30"
+                        y="-30"
+                        width="60"
+                        height="60"
+                        preserveAspectRatio="xMidYMid meet"
+                        clip-path="url(#crestClip3)"
+                      />
+                    </g>
+                    <text
+                      x="58"
+                      fill="#FFFFFF"
+                      :font-size="formatMultiName(getTeam(m.awayTeamId).name, 'three').fontSize"
+                      font-weight="900"
+                      letter-spacing=".4"
+                    >
+                      <tspan
+                        v-for="(line, lIdx) in formatMultiName(getTeam(m.awayTeamId).name, 'three').lines"
+                        :key="lIdx"
+                        x="58"
+                        :y="formatMultiName(getTeam(m.awayTeamId).name, 'three').startY + lIdx * formatMultiName(getTeam(m.awayTeamId).name, 'three').lineHeight"
+                      >
+                        {{ line }}
+                      </tspan>
+                    </text>
+                  </g>
+
+                  <!-- VS CENTER & TIME DIRECTLY BELOW -->
+                  <g transform="translate(468 62)">
+                    <circle r="28" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="2" />
+                    <circle r="22" :fill="selectedTheme.accent" />
+                    <text y="4" text-anchor="middle" dominant-baseline="middle" fill="#07131D" font-size="14" font-weight="900">VS</text>
+                    <text y="52" text-anchor="middle" fill="#FFFFFF" fill-opacity=".92" font-size="16" font-weight="900" letter-spacing=".5">{{ formatTime(m.time) }}</text>
+                  </g>
+
+                  <!-- HOME (Right) -->
+                  <g transform="translate(868 78)">
+                    <text
+                      x="-58"
+                      text-anchor="end"
+                      fill="#FFFFFF"
+                      :font-size="formatMultiName(getTeam(m.homeTeamId).name, 'three').fontSize"
+                      font-weight="900"
+                      letter-spacing=".4"
+                    >
+                      <tspan
+                        v-for="(line, lIdx) in formatMultiName(getTeam(m.homeTeamId).name, 'three').lines"
+                        :key="lIdx"
+                        x="-58"
+                        :y="formatMultiName(getTeam(m.homeTeamId).name, 'three').startY + lIdx * formatMultiName(getTeam(m.homeTeamId).name, 'three').lineHeight"
+                      >
+                        {{ line }}
+                      </tspan>
+                    </text>
+                    <g filter="url(#logoShadow)">
+                      <circle r="44" fill="#02080C" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
+                      <circle r="39" :fill="getTeam(m.homeTeamId).primary" />
+                      <image
+                        :href="teamDataUrls[m.homeTeamId] || getTeam(m.homeTeamId).logo"
+                        x="-30"
+                        y="-30"
+                        width="60"
+                        height="60"
+                        preserveAspectRatio="xMidYMid meet"
+                        clip-path="url(#crestClip3)"
+                      />
+                    </g>
+                  </g>
+                </g>
+              </template>
+
+              <!-- ============================================== -->
+              <!-- LAYOUT 4: FOUR MATCHES                         -->
+              <!-- ============================================== -->
+              <template v-else>
+                <g v-for="(m, mIdx) in matches" :key="m.id" :transform="`translate(72 ${300 + mIdx * 128})`">
+                  <g filter="url(#softShadow)">
+                    <rect width="936" height="114" rx="16" fill="url(#cardFill)" stroke="#FFFFFF" stroke-opacity=".15" />
+                    <rect width="5" height="114" rx="2.5" :fill="selectedTheme.accent" />
+                  </g>
+
+                  <!-- AWAY (Left) -->
+                  <g transform="translate(68 57)">
+                    <g filter="url(#logoShadow)">
+                      <circle r="34" fill="#02080C" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
+                      <circle r="30" :fill="getTeam(m.awayTeamId).primary" />
+                      <image
+                        :href="teamDataUrls[m.awayTeamId] || getTeam(m.awayTeamId).logo"
+                        x="-24"
+                        y="-24"
+                        width="48"
+                        height="48"
+                        preserveAspectRatio="xMidYMid meet"
+                        clip-path="url(#crestClip4)"
+                      />
+                    </g>
+                    <text
+                      x="48"
+                      fill="#FFFFFF"
+                      :font-size="formatMultiName(getTeam(m.awayTeamId).name, 'four').fontSize"
+                      font-weight="900"
+                      letter-spacing=".3"
+                    >
+                      <tspan
+                        v-for="(line, lIdx) in formatMultiName(getTeam(m.awayTeamId).name, 'four').lines"
+                        :key="lIdx"
+                        x="48"
+                        :y="formatMultiName(getTeam(m.awayTeamId).name, 'four').startY + lIdx * formatMultiName(getTeam(m.awayTeamId).name, 'four').lineHeight"
+                      >
+                        {{ line }}
+                      </tspan>
+                    </text>
+                  </g>
+
+                  <!-- VS CENTER & TIME DIRECTLY BELOW -->
+                  <g transform="translate(468 44)">
+                    <circle r="22" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.8" />
+                    <circle r="17" :fill="selectedTheme.accent" />
+                    <text y="4" text-anchor="middle" dominant-baseline="middle" fill="#07131D" font-size="11" font-weight="900">VS</text>
+                    <text y="42" text-anchor="middle" fill="#FFFFFF" fill-opacity=".92" font-size="14" font-weight="900" letter-spacing=".5">{{ formatTime(m.time) }}</text>
+                  </g>
+
+                  <!-- HOME (Right) -->
+                  <g transform="translate(868 57)">
+                    <text
+                      x="-48"
+                      text-anchor="end"
+                      fill="#FFFFFF"
+                      :font-size="formatMultiName(getTeam(m.homeTeamId).name, 'four').fontSize"
+                      font-weight="900"
+                      letter-spacing=".3"
+                    >
+                      <tspan
+                        v-for="(line, lIdx) in formatMultiName(getTeam(m.homeTeamId).name, 'four').lines"
+                        :key="lIdx"
+                        x="-48"
+                        :y="formatMultiName(getTeam(m.homeTeamId).name, 'four').startY + lIdx * formatMultiName(getTeam(m.homeTeamId).name, 'four').lineHeight"
+                      >
+                        {{ line }}
+                      </tspan>
+                    </text>
+                    <g filter="url(#logoShadow)">
+                      <circle r="34" fill="#02080C" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
+                      <circle r="30" :fill="getTeam(m.homeTeamId).primary" />
+                      <image
+                        :href="teamDataUrls[m.homeTeamId] || getTeam(m.homeTeamId).logo"
+                        x="-24"
+                        y="-24"
+                        width="48"
+                        height="48"
+                        preserveAspectRatio="xMidYMid meet"
+                        clip-path="url(#crestClip4)"
+                      />
+                    </g>
+                  </g>
+                </g>
+              </template>
+
+              <!-- BOTTOM VENUE CARD -->
               <g transform="translate(72 844)"><rect width="936" height="142" rx="22" fill="#050D12" fill-opacity=".9" stroke="#FFFFFF" stroke-opacity=".13" /><rect width="8" height="142" rx="4" :fill="selectedTheme.accent" />
                 <g transform="translate(47 34)"><path d="M18 0c-9.5 0-17 7.4-17 17 0 14.2 17 27 17 27s17-12.8 17-27C35 7.4 27.5 0 18 0Zm0 23.2a6.5 6.5 0 1 1 0-13 6.5 6.5 0 0 1 0 13Z" :fill="selectedTheme.accent" /><text x="55" y="10" fill="#FFFFFF" fill-opacity=".46" font-size="12" font-weight="800" letter-spacing="3.2">SEDE</text><text x="55" fill="#FFFFFF" :font-size="venueFontSize" font-weight="900" letter-spacing=".3"><tspan v-for="(line, index) in venueLines" :key="line" x="55" :y="venueLines.length > 1 ? 37 + index * 28 : 47">{{ line }}</tspan></text></g>
-                <path d="M720 24V118" stroke="#FFFFFF" stroke-opacity=".13" /><g transform="translate(828 25)" text-anchor="middle"><circle cy="17" r="17" fill="none" :stroke="selectedTheme.accent" stroke-width="2.5" /><path d="M0 7v11l7 4" fill="none" :stroke="selectedTheme.accent" stroke-width="2.5" stroke-linecap="round" /><text y="65" fill="#FFFFFF" fill-opacity=".46" font-size="10" font-weight="800" letter-spacing="2">PRIMER PITCHEO</text><text y="104" fill="#FFFFFF" font-size="29" font-weight="900" letter-spacing=".2">{{ formattedTime }}</text></g>
+                <path d="M720 24V118" stroke="#FFFFFF" stroke-opacity=".13" />
+                <g transform="translate(828 25)" text-anchor="middle">
+                  <circle cy="17" r="17" fill="none" :stroke="selectedTheme.accent" stroke-width="2.5" />
+                  <path d="M0 7v11l7 4" fill="none" :stroke="selectedTheme.accent" stroke-width="2.5" stroke-linecap="round" />
+                  <text y="65" fill="#FFFFFF" fill-opacity=".46" font-size="10" font-weight="800" letter-spacing="2">
+                    {{ matches.length === 1 ? 'PRIMER PITCHEO' : 'JORNADA' }}
+                  </text>
+                  <text y="104" fill="#FFFFFF" font-size="29" font-weight="900" letter-spacing=".2">
+                    {{ matches.length === 1 ? formatTime(matches[0].time) : `${matches.length} JUEGOS` }}
+                  </text>
+                </g>
               </g>
 
               <g transform="translate(72 1030)"><text fill="#FFFFFF" fill-opacity=".42" font-size="11" font-weight="700" letter-spacing="2.4">SOFTBALL · PASIÓN · TRADICIÓN</text><text x="936" text-anchor="end" fill="#FFFFFF" fill-opacity=".42" font-size="11" font-weight="700" letter-spacing="2.4">#DÍADEJUEGO</text></g>
