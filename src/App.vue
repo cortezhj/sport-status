@@ -709,11 +709,12 @@ onMounted(() => {
                     <text x="-32" y="22" :fill="selectedTheme.accentSoft" font-size="12" font-weight="700" letter-spacing="2">VISITANTE</text>
                   </g>
 
-                  <!-- VS Center -->
-                  <g transform="translate(468 138)">
+                  <!-- VS Center & Time below -->
+                  <g transform="translate(468 132)">
                     <circle r="32" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
                     <circle r="25" :fill="selectedTheme.accent" />
                     <text y="5" text-anchor="middle" dominant-baseline="middle" fill="#07131D" font-size="15" font-weight="900">VS</text>
+                    <text y="48" text-anchor="middle" fill="#FFFFFF" fill-opacity=".88" font-size="14" font-weight="800" letter-spacing=".5">{{ formatTime(m.time) }}</text>
                   </g>
 
                   <!-- HOME TEAM (Right) -->
@@ -746,14 +747,12 @@ onMounted(() => {
                     <rect width="936" height="156" rx="18" fill="url(#cardFill)" stroke="#FFFFFF" stroke-opacity=".15" />
                     <rect width="5" height="156" rx="2.5" :fill="selectedTheme.accent" />
                   </g>
-                  <!-- Time badge -->
-                  <text x="24" y="83" fill="#FFFFFF" fill-opacity=".5" font-size="13" font-weight="800">J{{ mIdx + 1 }} · {{ formatTime(m.time) }}</text>
 
-                  <!-- AWAY -->
-                  <g transform="translate(155 78)">
+                  <!-- AWAY (Left) -->
+                  <g transform="translate(68 78)">
                     <g filter="url(#logoShadow)">
-                      <circle r="42" fill="#02080C" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
-                      <circle r="38" :fill="getTeam(m.awayTeamId).primary" />
+                      <circle r="44" fill="#02080C" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
+                      <circle r="39" :fill="getTeam(m.awayTeamId).primary" />
                       <image
                         :href="teamDataUrls[m.awayTeamId] || getTeam(m.awayTeamId).logo"
                         x="-30"
@@ -764,22 +763,24 @@ onMounted(() => {
                         clip-path="url(#crestClip3)"
                       />
                     </g>
-                    <text x="56" y="8" fill="#FFFFFF" font-size="22" font-weight="900">{{ getTeam(m.awayTeamId).name.toLocaleUpperCase('es-VE') }}</text>
+                    <text x="58" y="8" fill="#FFFFFF" font-size="22" font-weight="900" letter-spacing=".4">{{ getTeam(m.awayTeamId).name.toLocaleUpperCase('es-VE') }}</text>
                   </g>
 
-                  <!-- VS Center -->
-                  <g transform="translate(500 78)">
-                    <circle r="24" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
-                    <circle r="19" :fill="selectedTheme.accent" />
-                    <text y="4" text-anchor="middle" dominant-baseline="middle" fill="#07131D" font-size="13" font-weight="900">VS</text>
+                  <!-- VS CENTER & TIME DIRECTLY BELOW -->
+                  <g transform="translate(468 68)">
+                    <text y="-34" text-anchor="middle" :fill="selectedTheme.accentSoft" font-size="11" font-weight="800" letter-spacing="1.5">JUEGO {{ mIdx + 1 }}</text>
+                    <circle r="23" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
+                    <circle r="18" :fill="selectedTheme.accent" />
+                    <text y="4" text-anchor="middle" dominant-baseline="middle" fill="#07131D" font-size="12" font-weight="900">VS</text>
+                    <text y="39" text-anchor="middle" fill="#FFFFFF" fill-opacity=".88" font-size="13" font-weight="800" letter-spacing=".5">{{ formatTime(m.time) }}</text>
                   </g>
 
-                  <!-- HOME -->
-                  <g transform="translate(815 78)">
-                    <text x="-56" y="8" text-anchor="end" fill="#FFFFFF" font-size="22" font-weight="900">{{ getTeam(m.homeTeamId).name.toLocaleUpperCase('es-VE') }}</text>
+                  <!-- HOME (Right) -->
+                  <g transform="translate(868 78)">
+                    <text x="-58" y="8" text-anchor="end" fill="#FFFFFF" font-size="22" font-weight="900" letter-spacing=".4">{{ getTeam(m.homeTeamId).name.toLocaleUpperCase('es-VE') }}</text>
                     <g filter="url(#logoShadow)">
-                      <circle r="42" fill="#02080C" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
-                      <circle r="38" :fill="getTeam(m.homeTeamId).primary" />
+                      <circle r="44" fill="#02080C" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
+                      <circle r="39" :fill="getTeam(m.homeTeamId).primary" />
                       <image
                         :href="teamDataUrls[m.homeTeamId] || getTeam(m.homeTeamId).logo"
                         x="-30"
@@ -803,13 +804,11 @@ onMounted(() => {
                     <rect width="936" height="114" rx="16" fill="url(#cardFill)" stroke="#FFFFFF" stroke-opacity=".15" />
                     <rect width="5" height="114" rx="2.5" :fill="selectedTheme.accent" />
                   </g>
-                  <!-- Time badge -->
-                  <text x="20" y="62" fill="#FFFFFF" fill-opacity=".5" font-size="12" font-weight="800">J{{ mIdx + 1 }} · {{ formatTime(m.time) }}</text>
 
-                  <!-- AWAY -->
-                  <g transform="translate(145 57)">
+                  <!-- AWAY (Left) -->
+                  <g transform="translate(68 57)">
                     <g filter="url(#logoShadow)">
-                      <circle r="33" fill="#02080C" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
+                      <circle r="34" fill="#02080C" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
                       <circle r="30" :fill="getTeam(m.awayTeamId).primary" />
                       <image
                         :href="teamDataUrls[m.awayTeamId] || getTeam(m.awayTeamId).logo"
@@ -821,21 +820,23 @@ onMounted(() => {
                         clip-path="url(#crestClip4)"
                       />
                     </g>
-                    <text x="45" y="6" fill="#FFFFFF" font-size="18" font-weight="900">{{ getTeam(m.awayTeamId).name.toLocaleUpperCase('es-VE') }}</text>
+                    <text x="48" y="7" fill="#FFFFFF" font-size="19" font-weight="900" letter-spacing=".3">{{ getTeam(m.awayTeamId).name.toLocaleUpperCase('es-VE') }}</text>
                   </g>
 
-                  <!-- VS Center -->
-                  <g transform="translate(500 57)">
-                    <circle r="20" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
-                    <circle r="16" :fill="selectedTheme.accent" />
+                  <!-- VS CENTER & TIME DIRECTLY BELOW -->
+                  <g transform="translate(468 47)">
+                    <text y="-25" text-anchor="middle" :fill="selectedTheme.accentSoft" font-size="10" font-weight="800" letter-spacing="1.5">JUEGO {{ mIdx + 1 }}</text>
+                    <circle r="19" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
+                    <circle r="15" :fill="selectedTheme.accent" />
                     <text y="4" text-anchor="middle" dominant-baseline="middle" fill="#07131D" font-size="11" font-weight="900">VS</text>
+                    <text y="32" text-anchor="middle" fill="#FFFFFF" fill-opacity=".88" font-size="12" font-weight="800" letter-spacing=".5">{{ formatTime(m.time) }}</text>
                   </g>
 
-                  <!-- HOME -->
-                  <g transform="translate(830 57)">
-                    <text x="-45" y="6" text-anchor="end" fill="#FFFFFF" font-size="18" font-weight="900">{{ getTeam(m.homeTeamId).name.toLocaleUpperCase('es-VE') }}</text>
+                  <!-- HOME (Right) -->
+                  <g transform="translate(868 57)">
+                    <text x="-48" y="7" text-anchor="end" fill="#FFFFFF" font-size="19" font-weight="900" letter-spacing=".3">{{ getTeam(m.homeTeamId).name.toLocaleUpperCase('es-VE') }}</text>
                     <g filter="url(#logoShadow)">
-                      <circle r="33" fill="#02080C" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
+                      <circle r="34" fill="#02080C" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5" />
                       <circle r="30" :fill="getTeam(m.homeTeamId).primary" />
                       <image
                         :href="teamDataUrls[m.homeTeamId] || getTeam(m.homeTeamId).logo"
