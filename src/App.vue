@@ -389,27 +389,27 @@ onMounted(() => {
             </div>
           </section>
 
-          <!-- SECTION 03: THEME ACCENT COLOR -->
+          <!-- SECTION 03: POSTER BACKGROUND IMAGE -->
           <section class="form-section compact-section">
-            <div class="section-heading theme-heading"><span>03</span><div><h2>Color de acento</h2><p>El toque final del cartel</p></div></div>
-            <div class="theme-options" role="radiogroup" aria-label="Color de acento">
-              <label v-for="theme in themes" :key="theme.id" :class="{ active: selectedThemeId === theme.id }">
-                <input v-model="selectedThemeId" type="radio" name="theme" :value="theme.id" />
-                <i :style="{ background: theme.accent }"></i>
-                <span>{{ theme.name }}</span>
-                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 8 2.5 2.5L12 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
-              </label>
-            </div>
-          </section>
-
-          <!-- SECTION 04: POSTER BACKGROUND IMAGE -->
-          <section class="form-section compact-section">
-            <div class="section-heading theme-heading"><span>04</span><div><h2>Fondo del cartel</h2><p>Elige el ambiente del estadio</p></div></div>
+            <div class="section-heading theme-heading"><span>03</span><div><h2>Fondo del cartel</h2><p>Elige el ambiente del estadio</p></div></div>
             <div class="bg-options" role="radiogroup" aria-label="Fondo del cartel">
               <label v-for="bg in backgrounds" :key="bg.id" :class="{ active: selectedBgId === bg.id }">
                 <input v-model="selectedBgId" type="radio" name="posterBg" :value="bg.id" />
                 <span class="bg-thumb" :style="{ backgroundImage: `url(${bgDataUrls[bg.id] || bg.asset})` }"></span>
                 <span>{{ bg.name }}</span>
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 8 2.5 2.5L12 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </label>
+            </div>
+          </section>
+
+          <!-- SECTION 04: THEME ACCENT COLOR -->
+          <section class="form-section compact-section">
+            <div class="section-heading theme-heading"><span>04</span><div><h2>Color de acento</h2><p>El toque final del cartel</p></div></div>
+            <div class="theme-options" role="radiogroup" aria-label="Color de acento">
+              <label v-for="theme in themes" :key="theme.id" :class="{ active: selectedThemeId === theme.id }">
+                <input v-model="selectedThemeId" type="radio" name="theme" :value="theme.id" />
+                <i :style="{ background: theme.accent }"></i>
+                <span>{{ theme.name }}</span>
                 <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 8 2.5 2.5L12 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
               </label>
             </div>
@@ -439,7 +439,7 @@ onMounted(() => {
               <pattern id="dotGrid" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.2" fill="#FFFFFF" fill-opacity=".09" /></pattern>
               <filter id="softShadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000000" flood-opacity=".42" /></filter>
               <filter id="logoShadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#000000" flood-opacity=".5" /></filter>
-              <clipPath id="leagueLogoClip"><circle cx="20" cy="20" r="20" /></clipPath>
+              <clipPath id="leagueLogoClip"><rect x="0" y="0" width="44" height="44" rx="10" ry="10" /></clipPath>
               <clipPath id="logo-away"><circle cx="0" cy="0" r="91" /></clipPath><clipPath id="logo-home"><circle cx="0" cy="0" r="91" /></clipPath>
             </defs>
 
@@ -450,21 +450,21 @@ onMounted(() => {
             <g opacity=".24" fill="none" :stroke="selectedTheme.accent" stroke-width="2"><path d="M540 355 743 558 540 761 337 558Z" /><path d="M540 400 698 558 540 716 382 558Z" stroke-dasharray="7 13" /><circle cx="540" cy="558" r="7" :fill="selectedTheme.accent" stroke="none" /></g>
 
             <g font-family="Arial, Helvetica, sans-serif">
-              <!-- HEADER WITH LEAGUE LOGO -->
-              <g transform="translate(72 56)">
-                <circle cx="20" cy="20" r="22" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".25" stroke-width="1.5" />
-                <circle cx="20" cy="20" r="20" :fill="selectedTheme.accent" />
+              <!-- HEADER WITH LEAGUE LOGO (ROUNDED CORNERS) -->
+              <g transform="translate(72 54)">
+                <rect x="-2" y="-2" width="48" height="48" rx="12" ry="12" fill="#07131D" stroke="#FFFFFF" stroke-opacity=".25" stroke-width="1.5" />
+                <rect x="0" y="0" width="44" height="44" rx="10" ry="10" :fill="selectedTheme.accent" />
                 <image
                   :href="leagueLogoDataUrl || logoLigaAsset"
                   x="0"
                   y="0"
-                  width="40"
-                  height="40"
+                  width="44"
+                  height="44"
                   preserveAspectRatio="xMidYMid slice"
                   clip-path="url(#leagueLogoClip)"
                 />
-                <text x="56" y="17" fill="#FFFFFF" font-size="23" font-weight="800" letter-spacing="3">LIGA CRISTIANA</text>
-                <text x="56" y="37" fill="#FFFFFF" fill-opacity=".52" font-size="11" font-weight="600" letter-spacing="3.2">JUGANDO PARA CRISTO</text>
+                <text x="60" y="19" fill="#FFFFFF" font-size="23" font-weight="800" letter-spacing="3">LIGA CRISTIANA</text>
+                <text x="60" y="39" fill="#FFFFFF" fill-opacity=".52" font-size="11" font-weight="600" letter-spacing="3.2">JUGANDO PARA CRISTO</text>
               </g>
 
               <g transform="translate(1008 61)" text-anchor="end"><text y="15" fill="#FFFFFF" fill-opacity=".54" font-size="11" font-weight="700" letter-spacing="2.5">JORNADA DE JUEGO</text><text y="38" fill="#FFFFFF" font-size="18" font-weight="800" letter-spacing="2">{{ gameYear }}</text></g>
