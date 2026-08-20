@@ -535,8 +535,18 @@ const downloadPoster = async () => {
     const styleEl = document.createElementNS('http://www.w3.org/2000/svg', 'style')
     styleEl.textContent = fontBase64
       ? `@font-face { font-family: 'Inter'; src: url('${fontBase64}') format('woff2'); font-weight: 100 900; font-style: normal; }
-         text, tspan { font-family: 'Inter', 'Segoe UI', Arial, sans-serif; }`
-      : `text, tspan { font-family: 'Segoe UI', Arial, sans-serif; }`
+         text, tspan {
+           font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+           stroke: currentColor;
+           stroke-width: 0.6px;
+           paint-order: stroke fill;
+         }`
+      : `text, tspan {
+           font-family: 'Segoe UI', Arial, sans-serif;
+           stroke: currentColor;
+           stroke-width: 0.6px;
+           paint-order: stroke fill;
+         }`
     defs.prepend(styleEl)
 
     const serialized = new XMLSerializer().serializeToString(svgClone)
