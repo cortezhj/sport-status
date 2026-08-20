@@ -367,6 +367,118 @@ button:disabled { cursor: not-allowed; }
   border-color: #c4772d;
   box-shadow: 0 0 0 3px rgba(218, 123, 36, .12);
 }
+.match-box-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.toggle-note-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border: 1px solid #d5ddd7;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #55625d;
+  font-family: 'Bahnschrift Condensed', 'Arial Narrow', sans-serif;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: .4px;
+  cursor: pointer;
+  line-height: 1;
+  transition: all .2s cubic-bezier(0.2, 0, 0, 1);
+}
+.toggle-note-btn svg {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+}
+.toggle-note-btn:hover {
+  background: #fdf6ec;
+  border-color: #e5b985;
+  color: #b86722;
+}
+.toggle-note-btn.active {
+  background: #fdf6ec;
+  border-color: #d7802b;
+  color: #b86722;
+}
+
+.result-note-wrap {
+  margin-top: 10px;
+}
+.result-note-wrap label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: #59635f;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+}
+.result-note-wrap small {
+  color: #7d8884;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.note-input-shell {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 11px;
+  border: 1px solid #d7ddd8;
+  border-radius: 8px;
+  background: #ffffff;
+  transition: border-color .2s, box-shadow .2s;
+}
+.note-input-shell svg {
+  width: 14px;
+  height: 14px;
+  color: #929d99;
+  flex-shrink: 0;
+}
+.note-input-shell input {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2b3a35;
+  background: transparent;
+  outline: none;
+}
+.note-input-shell input::placeholder {
+  color: #98a29e;
+  font-weight: 400;
+}
+.note-input-shell:focus-within {
+  border-color: #c4772d;
+  box-shadow: 0 0 0 3px rgba(218, 123, 36, .12);
+}
+
+.note-slide-enter-active, .note-slide-leave-active {
+  transition: all .22s cubic-bezier(0.2, 0, 0, 1);
+  overflow: hidden;
+}
+.note-slide-enter-from, .note-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+  max-height: 0;
+  margin-top: 0;
+}
+.note-slide-enter-to, .note-slide-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+  max-height: 80px;
+  margin-top: 10px;
+}
 
 .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px 12px; }
 .input-field { min-width: 0; }
