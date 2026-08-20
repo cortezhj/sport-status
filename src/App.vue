@@ -499,6 +499,19 @@ const downloadPoster = async () => {
     svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
     svgClone.setAttribute('width', '1080')
     svgClone.setAttribute('height', '1080')
+
+    // 💡 SOLUCIÓN: Inyectar estilos y fuentes web directamente dentro del SVG
+    const styleElement = document.createElementNS('http://www.w3.org/2000/svg', 'style')
+    
+    // Si usas Google Fonts, importa aquí la URL exacta de tu tipografía:
+    styleElement.textContent = `
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap');
+      * {
+        font-family: 'Montserrat', sans-serif !important;
+      }
+    `
+    svgClone.insertBefore(styleElement, svgClone.firstChild)
+
     const serialized = new XMLSerializer().serializeToString(svgClone)
     svgUrl = URL.createObjectURL(new Blob([serialized], { type: 'image/svg+xml;charset=utf-8' }))
     const image = new Image()
