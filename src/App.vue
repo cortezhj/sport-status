@@ -477,6 +477,110 @@ const preloadAssets = async () => {
   }
 }
 
+// ----------------------------------------------------
+// LOCALSTORAGE PERSISTENCE & AUTO-COMPLETE
+// ----------------------------------------------------
+const STORAGE_KEY_SCHEDULE = 'sport_status_saved_schedule'
+const STORAGE_KEY_RESULTS = 'sport_status_saved_results'
+
+const saveScheduleToStorage = () => {
+  try {
+    const payload = {
+      matches: matches.map((m) => ({ ...m })),
+      gameDate: gameDate.value,
+      venue: venue.value,
+      eyebrow: eyebrow.value,
+      posterTitle: posterTitle.value,
+      selectedThemeId: selectedThemeId.value,
+      selectedBgId: selectedBgId.value,
+      savedAt: new Date().toISOString(),
+    }
+    localStorage.setItem(STORAGE_KEY_SCHEDULE, JSON.stringify(payload))
+    return payload
+  } catch (e) {
+    console.warn('No se pudo guardar la cartelera en localStorage:', e)
+    return null
+  }
+}
+
+const syncResultsWithSchedule = (
+  sourceMatches: Match[],
+  sourceDate?: string,
+  sourceEyebrow?: string,
+  forceResetScores = false
+) => {
+  if (sourceDate) resultsDate.value = sourceDate
+  if (sourceEyebrow !== undefined) resultsEyebrow.value = sourceEyebrow
+
+  const updatedResultMatches: ResultMatch[] = sourceMatches.map((m, idx) => {
+    const existing = resultMatches[idx]
+    const isSameMatch =
+      !forceResetScores &&
+      existing &&
+      existing.awayTeamId === m.awayTeamId &&
+      existing.homeTeamId === m.homeTeamId
+
+    return {
+      id: `rm_${idx + 1}_${Date.now()}_${Math.random().toString(36).slice(2, 5)}`,
+      awayTeamId: m.awayTeamId,
+      homeTeamId: m.homeTeamId,
+      awayScore: isSameMatch ? { ...existing.awayScore } : { runs: 0, hits: 0, errors: 0 },
+      homeScore: isSameMatch ? { ...existing.homeScore } : { runs: 0, hits: 0, errors: 0 },
+      status: isSameMatch && existing.status ? existing.status : 'FINAL',
+      note: isSameMatch ? (existing.note || '') : '',
+      showNote: isSameMatch ? Boolean(existing.showNote || (existing.note && existing.note.trim())) : false,
+    }
+  })
+
+  resultMatches.splice(0, resultMatches.length, ...updatedResultMatches)
+  saveResultsToStorage()
+}
+
+const saveResultsToStorage = () => {
+  try {
+    const payload = {
+      resultMatches: resultMatches.map((rm) => ({
+        ...rm,
+        awayScore: { ...rm.awayScore },
+        homeScore: { ...rm.homeScore },
+      })),
+      resultsDate: resultsDate.value,
+      resultsEyebrow: resultsEyebrow.value,
+      resultsPosterTitle: resultsPosterTitle.value,
+      resultsThemeId: resultsThemeId.value,
+      resultsBgId: resultsBgId.value,
+      savedAt: new Date().toISOString(),
+    }
+    localStorage.setItem(STORAGE_KEY_RESULTS, JSON.stringify(payload))
+  } catch (e) {
+    console.warn('No se pudo guardar resultados en localStorage:', e)
+  }
+}
+
+const loadMatchesFromSchedule = () => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_SCHEDULE)
+    if (raw) {
+      const data = JSON.parse(raw)
+      if (data && Array.isArray(data.matches) && data.matches.length > 0) {
+        syncResultsWithSchedule(data.matches, data.gameDate, data.eyebrow, false)
+        showNotice('¡Juegos cargados desde la última jornada guardada!')
+        return
+      }
+    }
+  } catch (e) {
+    console.warn('Error leyendo schedule de localStorage:', e)
+  }
+
+  // Fallback to in-memory matches if not saved yet
+  if (matches.length > 0) {
+    syncResultsWithSchedule(matches, gameDate.value, eyebrow.value, false)
+    showNotice('¡Juegos cargados desde la cartelera actual!')
+  } else {
+    showNotice('No hay juegos guardados para cargar.')
+  }
+}
+
 const downloadPoster = async () => {
   const isResults = currentView.value === 'results'
   const isComplete = isResults ? isResultsFormComplete.value : isFormComplete.value
@@ -550,7 +654,14 @@ const downloadPoster = async () => {
     link.click()
     link.remove()
     window.setTimeout(() => URL.revokeObjectURL(pngUrl), 1000)
-    showNotice('Pizarra descargada en alta resolución.')
+
+    if (!isResults) {
+      saveScheduleToStorage()
+      showNotice('Cartel descargado y jornada guardada.')
+    } else {
+      saveResultsToStorage()
+      showNotice('Pizarra descargada en alta resolución.')
+    }
   } catch (error) {
     console.error(error)
     showNotice('No pudimos exportar el cartel. Intenta de nuevo.')
@@ -774,16 +885,29 @@ onMounted(() => {
                     <p>{{ resultMatches.length === 1 ? 'Marcador y estadísticas R·H·E' : `${resultMatches.length} marcadores registrados (máx. 4)` }}</p>
                   </div>
                 </div>
-                <button
-                  v-if="resultMatches.length < 4"
-                  type="button"
-                  class="add-match-btn"
-                  @click="addResultMatch"
-                  title="Añadir otro resultado a la jornada"
-                >
-                  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12m-6-6h12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
-                  <span>Añadir resultado</span>
-                </button>
+                <div class="section-heading-actions">
+                  <button
+                    type="button"
+                    class="sync-schedule-btn"
+                    @click="loadMatchesFromSchedule"
+                    title="Cargar y sincronizar los equipos de la cartelera de juegos"
+                  >
+                    <svg viewBox="0 0 20 20" aria-hidden="true">
+                      <path d="M4 4v5h5M16 16v-5h-5M15.5 8.5A6.5 6.5 0 0 0 5.2 6.2L4 9m12 2-1.2 2.8A6.5 6.5 0 0 1 4.5 11.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <span>Jornada</span>
+                  </button>
+                  <button
+                    v-if="resultMatches.length < 4"
+                    type="button"
+                    class="add-match-btn"
+                    @click="addResultMatch"
+                    title="Añadir otro resultado a la jornada"
+                  >
+                    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12m-6-6h12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
+                    <span>Añadir</span>
+                  </button>
+                </div>
               </div>
 
               <!-- RESULTS STACK -->
