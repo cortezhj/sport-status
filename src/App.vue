@@ -538,13 +538,13 @@ const downloadPoster = async () => {
          text, tspan {
            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
            stroke: currentColor;
-           stroke-width: 1.2px;
+           stroke-width: 0.6px;
            paint-order: stroke fill;
          }`
       : `text, tspan {
            font-family: 'Segoe UI', Arial, sans-serif;
            stroke: currentColor;
-           stroke-width: 1.2px;
+           stroke-width: 0.6px;
            paint-order: stroke fill;
          }`
     defs.prepend(styleEl)
@@ -1025,14 +1025,6 @@ onMounted(() => {
             aria-label="Cartel de juego de softball"
           >
             <defs>
-              <style>
-                text, tspan {
-                  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-                  stroke: currentColor;
-                  stroke-width: 0.4px;
-                  paint-order: stroke fill;
-                }
-              </style>
               <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0v40" fill="none" stroke="#FFFFFF" stroke-opacity=".03" /></pattern>
               <linearGradient id="cardFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#07131D" stop-opacity=".96" /><stop offset="100%" stop-color="#040A0F" stop-opacity=".98" /></linearGradient>
               <linearGradient id="accentLine" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" :stop-color="selectedTheme.accent" /><stop offset="50%" stop-color="#FFFFFF" /><stop offset="100%" :stop-color="selectedTheme.accent" /></linearGradient>
@@ -1239,14 +1231,6 @@ onMounted(() => {
             aria-label="Pizarra de resultados de softball"
           >
             <defs>
-              <style>
-                text, tspan {
-                  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-                  stroke: currentColor;
-                  stroke-width: 0.4px;
-                  paint-order: stroke fill;
-                }
-              </style>
               <pattern id="resGrid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0v40" fill="none" stroke="#FFFFFF" stroke-opacity=".03" /></pattern>
               <linearGradient id="resCardFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#08141F" stop-opacity=".97" /><stop offset="100%" stop-color="#04090E" stop-opacity=".99" /></linearGradient>
               <linearGradient id="resRowWinner" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" :stop-color="selectedResultsTheme.accent" stop-opacity=".22" /><stop offset="100%" :stop-color="selectedResultsTheme.accent" stop-opacity=".04" /></linearGradient>
