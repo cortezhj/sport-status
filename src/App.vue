@@ -1254,9 +1254,9 @@ onMounted(() => {
                   <text x="136" :y="resultMatches[0].awayScore.runs > resultMatches[0].homeScore.runs ? 162 : 178" fill="#FFFFFF" font-size="29" font-weight="900" letter-spacing=".5">{{ getTeam(resultMatches[0].awayTeamId).fullName.toLocaleUpperCase('es-VE') }}</text>
                   <text v-if="resultMatches[0].awayScore.runs > resultMatches[0].homeScore.runs" x="136" y="195" fill="#FDE047" font-size="13" font-weight="800" letter-spacing="3">★ GANADOR</text>
                   
-                  <text x="595" y="192" text-anchor="middle" font-size="78" font-weight="900" :fill="resultMatches[0].awayScore.runs > resultMatches[0].homeScore.runs ? selectedResultsTheme.accentSoft : '#FFFFFF'" letter-spacing="-2">{{ resultMatches[0].awayScore.runs }}</text>
-                  <text x="720" y="184" text-anchor="middle" font-size="42" font-weight="800" fill="#FFFFFF" fill-opacity=".88">{{ resultMatches[0].awayScore.hits }}</text>
-                  <text x="846" y="184" text-anchor="middle" font-size="42" font-weight="800" fill="#FFFFFF" fill-opacity=".88">{{ resultMatches[0].awayScore.errors }}</text>
+                  <text x="595" y="188" text-anchor="middle" font-size="58" font-weight="900" :fill="resultMatches[0].awayScore.runs > resultMatches[0].homeScore.runs ? selectedResultsTheme.accentSoft : '#FFFFFF'" letter-spacing="-1">{{ resultMatches[0].awayScore.runs }}</text>
+                  <text x="720" y="188" text-anchor="middle" font-size="58" font-weight="900" fill="#FFFFFF" fill-opacity=".92" letter-spacing="-1">{{ resultMatches[0].awayScore.hits }}</text>
+                  <text x="846" y="188" text-anchor="middle" font-size="58" font-weight="900" fill="#FFFFFF" fill-opacity=".92" letter-spacing="-1">{{ resultMatches[0].awayScore.errors }}</text>
 
                   <!-- ROW 2: TEAM 2 (y: 288 to 520) -->
                   <rect v-if="resultMatches[0].homeScore.runs > resultMatches[0].awayScore.runs" x="0" y="288" width="912" height="232" :rx="resultMatches[0].note ? 0 : 18" fill="url(#resRowWinner)" />
@@ -1268,9 +1268,9 @@ onMounted(() => {
                   <text x="136" :y="resultMatches[0].homeScore.runs > resultMatches[0].awayScore.runs ? 394 : 410" fill="#FFFFFF" font-size="29" font-weight="900" letter-spacing=".5">{{ getTeam(resultMatches[0].homeTeamId).fullName.toLocaleUpperCase('es-VE') }}</text>
                   <text v-if="resultMatches[0].homeScore.runs > resultMatches[0].awayScore.runs" x="136" y="427" fill="#FDE047" font-size="13" font-weight="800" letter-spacing="3">★ GANADOR</text>
 
-                  <text x="595" y="424" text-anchor="middle" font-size="78" font-weight="900" :fill="resultMatches[0].homeScore.runs > resultMatches[0].awayScore.runs ? selectedResultsTheme.accentSoft : '#FFFFFF'" letter-spacing="-2">{{ resultMatches[0].homeScore.runs }}</text>
-                  <text x="720" y="416" text-anchor="middle" font-size="42" font-weight="800" fill="#FFFFFF" fill-opacity=".88">{{ resultMatches[0].homeScore.hits }}</text>
-                  <text x="846" y="416" text-anchor="middle" font-size="42" font-weight="800" fill="#FFFFFF" fill-opacity=".88">{{ resultMatches[0].homeScore.errors }}</text>
+                  <text x="595" y="420" text-anchor="middle" font-size="58" font-weight="900" :fill="resultMatches[0].homeScore.runs > resultMatches[0].awayScore.runs ? selectedResultsTheme.accentSoft : '#FFFFFF'" letter-spacing="-1">{{ resultMatches[0].homeScore.runs }}</text>
+                  <text x="720" y="420" text-anchor="middle" font-size="58" font-weight="900" fill="#FFFFFF" fill-opacity=".92" letter-spacing="-1">{{ resultMatches[0].homeScore.hits }}</text>
+                  <text x="846" y="420" text-anchor="middle" font-size="58" font-weight="900" fill="#FFFFFF" fill-opacity=".92" letter-spacing="-1">{{ resultMatches[0].homeScore.errors }}</text>
 
                   <!-- INTEGRATED NOTE FOOTER ROW -->
                   <template v-if="resultMatches[0].note">
@@ -1321,9 +1321,9 @@ onMounted(() => {
                   </g>
                   <text x="100" :y="rm.awayScore.runs > rm.homeScore.runs ? 98 : 108" fill="#FFFFFF" font-size="24" font-weight="900" letter-spacing=".5">{{ getTeam(rm.awayTeamId).fullName.toLocaleUpperCase('es-VE') }}</text>
                   <text v-if="rm.awayScore.runs > rm.homeScore.runs" x="100" y="121" fill="#FDE047" font-size="11.5" font-weight="800" letter-spacing="2">★ GANADOR</text>
-                  <text x="595" y="112" text-anchor="middle" font-size="52" font-weight="900" :fill="rm.awayScore.runs > rm.homeScore.runs ? selectedResultsTheme.accentSoft : '#FFFFFF'" letter-spacing="-1">{{ rm.awayScore.runs }}</text>
-                  <text x="720" y="108" text-anchor="middle" font-size="28" font-weight="800" fill="#FFFFFF" fill-opacity=".88">{{ rm.awayScore.hits }}</text>
-                  <text x="846" y="108" text-anchor="middle" font-size="28" font-weight="800" fill="#FFFFFF" fill-opacity=".88">{{ rm.awayScore.errors }}</text>
+                  <text x="595" y="110" text-anchor="middle" font-size="40" font-weight="900" :fill="rm.awayScore.runs > rm.homeScore.runs ? selectedResultsTheme.accentSoft : '#FFFFFF'" letter-spacing="-1">{{ rm.awayScore.runs }}</text>
+                  <text x="720" y="110" text-anchor="middle" font-size="40" font-weight="900" fill="#FFFFFF" fill-opacity=".92" letter-spacing="-1">{{ rm.awayScore.hits }}</text>
+                  <text x="846" y="110" text-anchor="middle" font-size="40" font-weight="900" fill="#FFFFFF" fill-opacity=".92" letter-spacing="-1">{{ rm.awayScore.errors }}</text>
 
                   <!-- ROW 2: TEAM 2 -->
                   <rect v-if="rm.homeScore.runs > rm.awayScore.runs" x="0" y="157" width="912" height="111" :rx="rm.note ? 0 : 16" fill="url(#resRowWinner)" />
@@ -1334,9 +1334,9 @@ onMounted(() => {
                   </g>
                   <text x="100" :y="rm.homeScore.runs > rm.awayScore.runs ? 209 : 219" fill="#FFFFFF" font-size="24" font-weight="900" letter-spacing=".5">{{ getTeam(rm.homeTeamId).fullName.toLocaleUpperCase('es-VE') }}</text>
                   <text v-if="rm.homeScore.runs > rm.awayScore.runs" x="100" y="232" fill="#FDE047" font-size="11.5" font-weight="800" letter-spacing="2">★ GANADOR</text>
-                  <text x="595" y="223" text-anchor="middle" font-size="52" font-weight="900" :fill="rm.homeScore.runs > rm.awayScore.runs ? selectedResultsTheme.accentSoft : '#FFFFFF'" letter-spacing="-1">{{ rm.homeScore.runs }}</text>
-                  <text x="720" y="219" text-anchor="middle" font-size="28" font-weight="800" fill="#FFFFFF" fill-opacity=".88">{{ rm.homeScore.hits }}</text>
-                  <text x="846" y="219" text-anchor="middle" font-size="28" font-weight="800" fill="#FFFFFF" fill-opacity=".88">{{ rm.homeScore.errors }}</text>
+                  <text x="595" y="221" text-anchor="middle" font-size="40" font-weight="900" :fill="rm.homeScore.runs > rm.awayScore.runs ? selectedResultsTheme.accentSoft : '#FFFFFF'" letter-spacing="-1">{{ rm.homeScore.runs }}</text>
+                  <text x="720" y="221" text-anchor="middle" font-size="40" font-weight="900" fill="#FFFFFF" fill-opacity=".92" letter-spacing="-1">{{ rm.homeScore.hits }}</text>
+                  <text x="846" y="221" text-anchor="middle" font-size="40" font-weight="900" fill="#FFFFFF" fill-opacity=".92" letter-spacing="-1">{{ rm.homeScore.errors }}</text>
 
                   <!-- INTEGRATED NOTE FOOTER ROW -->
                   <template v-if="rm.note">
@@ -1386,9 +1386,9 @@ onMounted(() => {
                     <image :href="teamDataUrls[rm.awayTeamId] || getTeam(rm.awayTeamId).logo" x="-19" y="-19" width="38" height="38" preserveAspectRatio="xMidYMid meet" clip-path="url(#resCrestClip3)" />
                   </g>
                   <text x="80" y="80.5" fill="#FFFFFF" font-size="22" font-weight="900" letter-spacing=".4">{{ getTeam(rm.awayTeamId).fullName.toLocaleUpperCase('es-VE') }}</text>
-                  <text x="600" y="83" text-anchor="middle" font-size="38" font-weight="900" :fill="rm.awayScore.runs > rm.homeScore.runs ? selectedResultsTheme.accentSoft : '#FFFFFF'">{{ rm.awayScore.runs }}</text>
-                  <text x="720" y="80" text-anchor="middle" font-size="22" font-weight="800" fill="#FFFFFF" fill-opacity=".88">{{ rm.awayScore.hits }}</text>
-                  <text x="846" y="80" text-anchor="middle" font-size="22" font-weight="800" fill="#FFFFFF" fill-opacity=".88">{{ rm.awayScore.errors }}</text>
+                  <text x="600" y="82" text-anchor="middle" font-size="32" font-weight="900" :fill="rm.awayScore.runs > rm.homeScore.runs ? selectedResultsTheme.accentSoft : '#FFFFFF'">{{ rm.awayScore.runs }}</text>
+                  <text x="720" y="82" text-anchor="middle" font-size="32" font-weight="900" fill="#FFFFFF" fill-opacity=".92">{{ rm.awayScore.hits }}</text>
+                  <text x="846" y="82" text-anchor="middle" font-size="32" font-weight="900" fill="#FFFFFF" fill-opacity=".92">{{ rm.awayScore.errors }}</text>
 
                   <!-- ROW 2: TEAM 2 -->
                   <rect v-if="rm.homeScore.runs > rm.awayScore.runs" x="0" y="111" width="912" height="75" :rx="rm.note ? 0 : 14" fill="url(#resRowWinner)" />
@@ -1398,9 +1398,9 @@ onMounted(() => {
                     <image :href="teamDataUrls[rm.homeTeamId] || getTeam(rm.homeTeamId).logo" x="-19" y="-19" width="38" height="38" preserveAspectRatio="xMidYMid meet" clip-path="url(#resCrestClip3)" />
                   </g>
                   <text x="80" y="155.5" fill="#FFFFFF" font-size="22" font-weight="900" letter-spacing=".4">{{ getTeam(rm.homeTeamId).fullName.toLocaleUpperCase('es-VE') }}</text>
-                  <text x="600" y="158" text-anchor="middle" font-size="38" font-weight="900" :fill="rm.homeScore.runs > rm.awayScore.runs ? selectedResultsTheme.accentSoft : '#FFFFFF'">{{ rm.homeScore.runs }}</text>
-                  <text x="720" y="155" text-anchor="middle" font-size="22" font-weight="800" fill="#FFFFFF" fill-opacity=".88">{{ rm.homeScore.hits }}</text>
-                  <text x="846" y="155" text-anchor="middle" font-size="22" font-weight="800" fill="#FFFFFF" fill-opacity=".88">{{ rm.homeScore.errors }}</text>
+                  <text x="600" y="157" text-anchor="middle" font-size="32" font-weight="900" :fill="rm.homeScore.runs > rm.awayScore.runs ? selectedResultsTheme.accentSoft : '#FFFFFF'">{{ rm.homeScore.runs }}</text>
+                  <text x="720" y="157" text-anchor="middle" font-size="32" font-weight="900" fill="#FFFFFF" fill-opacity=".92">{{ rm.homeScore.hits }}</text>
+                  <text x="846" y="157" text-anchor="middle" font-size="32" font-weight="900" fill="#FFFFFF" fill-opacity=".92">{{ rm.homeScore.errors }}</text>
 
                   <!-- INTEGRATED NOTE FOOTER ROW -->
                   <template v-if="rm.note">
@@ -1450,9 +1450,9 @@ onMounted(() => {
                     <image :href="teamDataUrls[rm.awayTeamId] || getTeam(rm.awayTeamId).logo" x="-14" y="-14" width="28" height="28" preserveAspectRatio="xMidYMid meet" clip-path="url(#resCrestClip4)" />
                   </g>
                   <text x="62" y="63.5" fill="#FFFFFF" font-size="18.5" font-weight="900" letter-spacing=".4">{{ getTeam(rm.awayTeamId).fullName.toLocaleUpperCase('es-VE') }}</text>
-                  <text x="610" y="65" text-anchor="middle" font-size="30" font-weight="900" :fill="rm.awayScore.runs > rm.homeScore.runs ? selectedResultsTheme.accentSoft : '#FFFFFF'">{{ rm.awayScore.runs }}</text>
-                  <text x="725" y="64" text-anchor="middle" font-size="18" font-weight="800" fill="#FFFFFF" fill-opacity=".88">{{ rm.awayScore.hits }}</text>
-                  <text x="846" y="64" text-anchor="middle" font-size="18" font-weight="800" fill="#FFFFFF" fill-opacity=".88">{{ rm.awayScore.errors }}</text>
+                  <text x="610" y="64" text-anchor="middle" font-size="26" font-weight="900" :fill="rm.awayScore.runs > rm.homeScore.runs ? selectedResultsTheme.accentSoft : '#FFFFFF'">{{ rm.awayScore.runs }}</text>
+                  <text x="725" y="64" text-anchor="middle" font-size="26" font-weight="900" fill="#FFFFFF" fill-opacity=".92">{{ rm.awayScore.hits }}</text>
+                  <text x="846" y="64" text-anchor="middle" font-size="26" font-weight="900" fill="#FFFFFF" fill-opacity=".92">{{ rm.awayScore.errors }}</text>
 
                   <!-- ROW 2: TEAM 2 -->
                   <rect v-if="rm.homeScore.runs > rm.awayScore.runs" x="0" y="84" width="912" height="54" :rx="rm.note ? 0 : 12" fill="url(#resRowWinner)" />
@@ -1462,9 +1462,9 @@ onMounted(() => {
                     <image :href="teamDataUrls[rm.homeTeamId] || getTeam(rm.homeTeamId).logo" x="-14" y="-14" width="28" height="28" preserveAspectRatio="xMidYMid meet" clip-path="url(#resCrestClip4)" />
                   </g>
                   <text x="62" y="117.5" fill="#FFFFFF" font-size="18.5" font-weight="900" letter-spacing=".4">{{ getTeam(rm.homeTeamId).fullName.toLocaleUpperCase('es-VE') }}</text>
-                  <text x="610" y="119" text-anchor="middle" font-size="30" font-weight="900" :fill="rm.homeScore.runs > rm.awayScore.runs ? selectedResultsTheme.accentSoft : '#FFFFFF'">{{ rm.homeScore.runs }}</text>
-                  <text x="725" y="118" text-anchor="middle" font-size="18" font-weight="800" fill="#FFFFFF" fill-opacity=".88">{{ rm.homeScore.hits }}</text>
-                  <text x="846" y="118" text-anchor="middle" font-size="18" font-weight="800" fill="#FFFFFF" fill-opacity=".88">{{ rm.homeScore.errors }}</text>
+                  <text x="610" y="118" text-anchor="middle" font-size="26" font-weight="900" :fill="rm.homeScore.runs > rm.awayScore.runs ? selectedResultsTheme.accentSoft : '#FFFFFF'">{{ rm.homeScore.runs }}</text>
+                  <text x="725" y="118" text-anchor="middle" font-size="26" font-weight="900" fill="#FFFFFF" fill-opacity=".92">{{ rm.homeScore.hits }}</text>
+                  <text x="846" y="118" text-anchor="middle" font-size="26" font-weight="900" fill="#FFFFFF" fill-opacity=".92">{{ rm.homeScore.errors }}</text>
 
                   <!-- INTEGRATED NOTE FOOTER ROW -->
                   <template v-if="rm.note">
