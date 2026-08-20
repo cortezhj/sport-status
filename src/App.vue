@@ -453,30 +453,6 @@ const urlToDataUrl = async (url: string): Promise<string> => {
   }
 }
 
-// Cached base64 font data for SVG export
-let cachedFontBase64: string | null = null
-
-const loadFontAsBase64 = async (): Promise<string> => {
-  if (cachedFontBase64) return cachedFontBase64
-  try {
-    // Fetch Inter font weights used in the SVG (600, 700, 800, 900)
-    const fontUrl = 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2'
-    const resp = await fetch(fontUrl)
-    if (!resp.ok) throw new Error('Font fetch failed')
-    const fontBlob = await resp.blob()
-    const base64 = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve(String(reader.result))
-      reader.onerror = () => reject(reader.error)
-      reader.readAsDataURL(fontBlob)
-    })
-    cachedFontBase64 = base64
-    return base64
-  } catch {
-    return ''
-  }
-}
-
 const preloadAssets = async () => {
   try {
     const [stadium, league] = await Promise.all([
@@ -523,32 +499,6 @@ const downloadPoster = async () => {
     svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
     svgClone.setAttribute('width', '1080')
     svgClone.setAttribute('height', '1080')
-
-    // Embed font as base64 @font-face into SVG defs so the Canvas renderer
-    // uses the exact same typeface as the on-screen preview
-    const fontBase64 = await loadFontAsBase64()
-    let defs = svgClone.querySelector('defs')
-    if (!defs) {
-      defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
-      svgClone.prepend(defs)
-    }
-    const styleEl = document.createElementNS('http://www.w3.org/2000/svg', 'style')
-    styleEl.textContent = fontBase64
-      ? `@font-face { font-family: 'Inter'; src: url('${fontBase64}') format('woff2'); font-weight: 100 900; font-style: normal; }
-         text, tspan {
-           font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-           stroke: currentColor;
-           stroke-width: 0.6px;
-           paint-order: stroke fill;
-         }`
-      : `text, tspan {
-           font-family: 'Segoe UI', Arial, sans-serif;
-           stroke: currentColor;
-           stroke-width: 0.6px;
-           paint-order: stroke fill;
-         }`
-    defs.prepend(styleEl)
-
     const serialized = new XMLSerializer().serializeToString(svgClone)
     svgUrl = URL.createObjectURL(new Blob([serialized], { type: 'image/svg+xml;charset=utf-8' }))
     const image = new Image()
